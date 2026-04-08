@@ -1,0 +1,13 @@
+.next
+node_modules
+out
+coverage
+.DS_Store
+*.log
+.gstack/
+.local-data/
+__pycache__/
+localhost-*.png
+design-*.png
+dev.out.log
+dev.err.log
