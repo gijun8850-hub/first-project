@@ -6,6 +6,7 @@ coverage
 *.log
 .gstack/
 .local-data/
+.superpowers/
 __pycache__/
 localhost-*.png
 design-*.png
