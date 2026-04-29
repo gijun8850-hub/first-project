@@ -26,9 +26,9 @@ export function HistoryScreen({ checkIns, onBack }: HistoryScreenProps) {
       {rows.length === 0 ? (
         <p className="coach-muted">아직 저장된 체크인이 없습니다.</p>
       ) : (
-        <ul className="coach-history-list">
+        <ul className="coach-history-list" data-history-list="true">
           {rows.map((row) => (
-            <li className="coach-history-card" key={row.id}>
+            <li className="coach-history-card" data-history-row={row.id} key={row.id}>
               <div className="coach-history-card-head">
                 <strong>{row.measuredAtLabel}</strong>
                 <span>{row.deltaSummary}</span>

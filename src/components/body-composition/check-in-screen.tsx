@@ -19,7 +19,7 @@ export function CheckInScreen({
   onSave,
 }: CheckInScreenProps) {
   return (
-    <section className="coach-panel coach-form-shell">
+    <section className="coach-panel coach-form-shell" data-check-in-form="true">
       <div className="coach-section-head">
         <div>
           <span className="coach-section-label">주간 체크인</span>
@@ -35,6 +35,7 @@ export function CheckInScreen({
         <label className="coach-field">
           <span>측정 날짜</span>
           <input
+            name="measuredAt"
             type="date"
             value={draft.measuredAt}
             onChange={(event) => onChange("measuredAt", event.target.value)}
@@ -45,6 +46,7 @@ export function CheckInScreen({
           <span>체중 (kg)</span>
           <input
             inputMode="decimal"
+            name="weightKg"
             value={draft.weightKg}
             onChange={(event) => onChange("weightKg", event.target.value)}
           />
@@ -54,6 +56,7 @@ export function CheckInScreen({
           <span>골격근량 (kg)</span>
           <input
             inputMode="decimal"
+            name="skeletalMuscleKg"
             value={draft.skeletalMuscleKg}
             onChange={(event) => onChange("skeletalMuscleKg", event.target.value)}
           />
@@ -63,6 +66,7 @@ export function CheckInScreen({
           <span>체지방률 (%)</span>
           <input
             inputMode="decimal"
+            name="bodyFatPercent"
             value={draft.bodyFatPercent}
             onChange={(event) => onChange("bodyFatPercent", event.target.value)}
           />
@@ -72,6 +76,7 @@ export function CheckInScreen({
       <label className="coach-field">
         <span>이번 주 메모</span>
         <textarea
+          name="note"
           rows={4}
           value={draft.note}
           onChange={(event) => onChange("note", event.target.value)}
@@ -79,7 +84,7 @@ export function CheckInScreen({
       </label>
 
       {errors.length > 0 ? (
-        <ul className="coach-error-list">
+        <ul className="coach-error-list" data-error-list="true">
           {errors.map((error) => (
             <li key={error}>{error}</li>
           ))}

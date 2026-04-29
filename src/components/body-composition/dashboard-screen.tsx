@@ -11,41 +11,66 @@ import type { CheckInRecord } from "@/types/body-composition";
 type DashboardScreenProps = {
   checkIns: CheckInRecord[];
   onAddCheckIn: () => void;
+  onCloseCheckInDetail?: () => void;
+  onOpenCheckInDetail?: (id: string) => void;
   onOpenHistory: () => void;
+  selectedCheckInId?: string | null;
 };
 
 export function DashboardScreen({
   checkIns,
   onAddCheckIn,
+  onCloseCheckInDetail,
+  onOpenCheckInDetail,
   onOpenHistory,
+  selectedCheckInId,
 }: DashboardScreenProps) {
   if (checkIns.length === 0) {
     return (
-      <section className="coach-panel coach-empty-state">
+      <section
+        className="coach-panel coach-empty-state"
+        data-dashboard="true"
+        data-empty-state="true"
+      >
         <span className="coach-section-label">주간 코치 시작</span>
         <h1>첫 주간 체크인을 추가해 기준선을 만드세요.</h1>
         <p>
           첫 기록을 남기면 다음 주부터 체중, 골격근량, 체지방률 흐름을 읽어서
           이번 주 운동 방향을 제안합니다.
         </p>
-        <button className="coach-primary-button" onClick={onAddCheckIn} type="button">
+        <button
+          className="coach-primary-button"
+          data-action="open-check-in"
+          onClick={onAddCheckIn}
+          type="button"
+        >
           체크인 추가
         </button>
       </section>
     );
   }
 
+  const metricIds = ["weight", "skeletal-muscle", "body-fat"];
   const summary = buildCoachSummary(checkIns);
+  const historyRows = buildHistoryRows(checkIns);
   const metrics = buildMetricSnapshots(checkIns);
   const points = buildTrendPoints(checkIns);
-  const recentRows = buildHistoryRows(checkIns).slice(0, 3);
+  const recentRows = historyRows.slice(0, 3);
+  const selectedRow = selectedCheckInId
+    ? historyRows.find((row) => row.id === selectedCheckInId)
+    : undefined;
 
   return (
-    <section className="coach-dashboard">
-      <div className="coach-panel coach-summary-card">
+    <section className="coach-dashboard" data-dashboard="true">
+      <div className="coach-panel coach-summary-card" data-coach-summary="true">
         <div className="coach-summary-head">
           <span className="coach-section-label">이번 주 코치</span>
-          <button className="coach-secondary-button" onClick={onAddCheckIn} type="button">
+          <button
+            className="coach-secondary-button"
+            data-action="open-check-in"
+            onClick={onAddCheckIn}
+            type="button"
+          >
             체크인 추가
           </button>
         </div>
@@ -61,8 +86,12 @@ export function DashboardScreen({
       </div>
 
       <div className="coach-metrics-grid">
-        {metrics.map((metric) => (
-          <article className="coach-panel coach-metric-card" key={metric.label}>
+        {metrics.map((metric, index) => (
+          <article
+            className="coach-panel coach-metric-card"
+            data-metric-card={metricIds[index]}
+            key={metric.label}
+          >
             <span className="coach-metric-label">{metric.label}</span>
             <strong>{metric.valueText}</strong>
             <p>{metric.deltaText}</p>
@@ -89,18 +118,76 @@ export function DashboardScreen({
             </button>
           </div>
 
-          <ul className="coach-history-preview">
+          <ul className="coach-history-preview" data-history-preview="true">
             {recentRows.map((row) => (
               <li key={row.id}>
-                <strong>{row.measuredAtLabel}</strong>
-                <span>{row.weightText}</span>
-                <span>{row.skeletalMuscleText}</span>
-                <span>{row.bodyFatText}</span>
+                <button
+                  className="coach-history-trigger"
+                  data-record-trigger={row.id}
+                  onClick={() => onOpenCheckInDetail?.(row.id)}
+                  type="button"
+                >
+                  <strong>{row.measuredAtLabel}</strong>
+                  <span>{row.weightText}</span>
+                  <span>{row.skeletalMuscleText}</span>
+                  <span>{row.bodyFatText}</span>
+                </button>
               </li>
             ))}
           </ul>
         </article>
       </div>
+
+      {selectedRow ? (
+        <div className="coach-modal-backdrop">
+          <article
+            aria-label="selected check-in details"
+            aria-modal="true"
+            className="coach-modal-window coach-modal-window-compact"
+            data-record-dialog={selectedRow.id}
+            role="dialog"
+          >
+            <section className="coach-panel coach-detail-modal">
+              <div className="coach-section-head">
+                <div>
+                  <span className="coach-section-label">체크인 상세</span>
+                  <h2>{selectedRow.measuredAtLabel}</h2>
+                </div>
+
+                <button
+                  className="coach-secondary-button"
+                  onClick={onCloseCheckInDetail}
+                  type="button"
+                >
+                  닫기
+                </button>
+              </div>
+
+              <p className="coach-muted">{selectedRow.deltaSummary}</p>
+
+              <div className="coach-detail-metrics">
+                <div className="coach-detail-metric">
+                  <span>체중</span>
+                  <strong>{selectedRow.weightText}</strong>
+                </div>
+                <div className="coach-detail-metric">
+                  <span>골격근량</span>
+                  <strong>{selectedRow.skeletalMuscleText}</strong>
+                </div>
+                <div className="coach-detail-metric">
+                  <span>체지방률</span>
+                  <strong>{selectedRow.bodyFatText}</strong>
+                </div>
+              </div>
+
+              <div className="coach-detail-note">
+                <span className="coach-section-label">메모</span>
+                <p>{selectedRow.note || "저장된 메모가 없습니다."}</p>
+              </div>
+            </section>
+          </article>
+        </div>
+      ) : null}
     </section>
   );
 }

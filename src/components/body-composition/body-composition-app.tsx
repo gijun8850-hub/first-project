@@ -43,6 +43,7 @@ export function BodyCompositionApp() {
   const [errors, setErrors] = useState<string[]>([]);
   const [confirmSuspiciousSave, setConfirmSuspiciousSave] = useState(false);
   const [hasHydrated, setHasHydrated] = useState(false);
+  const [selectedCheckInId, setSelectedCheckInId] = useState<string | null>(null);
 
   useEffect(() => {
     if (typeof window === "undefined") {
@@ -64,10 +65,26 @@ export function BodyCompositionApp() {
   function openCheckIn() {
     setErrors([]);
     setConfirmSuspiciousSave(false);
+    setSelectedCheckInId(null);
     setDraft((current) =>
       current.measuredAt ? current : { ...current, measuredAt: todayDate() },
     );
     setView("check-in");
+  }
+
+  function openHistory() {
+    setSelectedCheckInId(null);
+    setView("history");
+  }
+
+  function closeOverlay() {
+    setView("dashboard");
+    setSelectedCheckInId(null);
+  }
+
+  function openCheckInDetail(id: string) {
+    setView("dashboard");
+    setSelectedCheckInId(id);
   }
 
   function handleChange(field: keyof CheckInDraft, value: string) {
@@ -103,6 +120,7 @@ export function BodyCompositionApp() {
     setDraft(createEmptyDraft());
     setErrors([]);
     setConfirmSuspiciousSave(false);
+    setSelectedCheckInId(null);
     setView("dashboard");
   }
 
@@ -117,7 +135,7 @@ export function BodyCompositionApp() {
         <div className="coach-header-actions">
           <button
             className="coach-secondary-button"
-            onClick={() => setView("history")}
+            onClick={openHistory}
             type="button"
           >
             기록 보기
@@ -128,31 +146,54 @@ export function BodyCompositionApp() {
         </div>
       </header>
 
-      {view === "dashboard" ? (
-        <DashboardScreen
-          checkIns={checkIns}
-          onAddCheckIn={openCheckIn}
-          onOpenHistory={() => setView("history")}
-        />
-      ) : null}
+      <DashboardScreen
+        checkIns={checkIns}
+        onAddCheckIn={openCheckIn}
+        onCloseCheckInDetail={() => setSelectedCheckInId(null)}
+        onOpenCheckInDetail={openCheckInDetail}
+        onOpenHistory={openHistory}
+        selectedCheckInId={selectedCheckInId}
+      />
 
       {view === "check-in" ? (
-        <CheckInScreen
-          draft={draft}
-          errors={errors}
-          showSuspiciousWarning={confirmSuspiciousSave}
-          onBack={() => {
-            setErrors([]);
-            setConfirmSuspiciousSave(false);
-            setView("dashboard");
-          }}
-          onChange={handleChange}
-          onSave={handleSave}
-        />
+        <div className="coach-modal-backdrop" onClick={closeOverlay}>
+          <div
+            aria-label="weekly check-in"
+            aria-modal="true"
+            className="coach-modal-window coach-modal-window-wide"
+            data-modal-view="check-in"
+            onClick={(event) => event.stopPropagation()}
+            role="dialog"
+          >
+            <CheckInScreen
+              draft={draft}
+              errors={errors}
+              showSuspiciousWarning={confirmSuspiciousSave}
+              onBack={() => {
+                setErrors([]);
+                setConfirmSuspiciousSave(false);
+                closeOverlay();
+              }}
+              onChange={handleChange}
+              onSave={handleSave}
+            />
+          </div>
+        </div>
       ) : null}
 
       {view === "history" ? (
-        <HistoryScreen checkIns={checkIns} onBack={() => setView("dashboard")} />
+        <div className="coach-modal-backdrop" onClick={closeOverlay}>
+          <div
+            aria-label="check-in history"
+            aria-modal="true"
+            className="coach-modal-window"
+            data-modal-view="history"
+            onClick={(event) => event.stopPropagation()}
+            role="dialog"
+          >
+            <HistoryScreen checkIns={checkIns} onBack={closeOverlay} />
+          </div>
+        </div>
       ) : null}
     </main>
   );
