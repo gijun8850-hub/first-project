@@ -1,5 +1,5 @@
-import { KioskApp } from "@/components/kiosk/kiosk-app";
+import { BodyCompositionApp } from "@/components/body-composition/body-composition-app";
 
 export default function HomePage() {
-  return <KioskApp />;
+  return <BodyCompositionApp />;
 }

@@ -6,7 +6,7 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "test": "node --import tsx --test src/lib/kiosk/combo-stats.test.ts src/components/kiosk/kiosk-app.test.tsx"
+    "test": "node --import tsx --test src/lib/kiosk/combo-stats.test.ts src/components/kiosk/kiosk-app.test.tsx src/lib/body-composition/coach-engine.test.ts src/lib/body-composition/storage-validation.test.ts src/components/body-composition/body-composition-ui.test.tsx"
   },
   "dependencies": {
     "next": "^15.3.0",

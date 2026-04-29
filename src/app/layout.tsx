@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "야키테이 키오스크",
-  description: "야키테이 야끼소바 가게를 위한 시연용 주문 키오스크",
+  title: "주간 체성분 코치",
+  description: "주 1회 체성분 체크인을 저장하고 이번 주 운동 방향을 제안하는 정적 웹 앱",
 };
 
 export default function RootLayout({

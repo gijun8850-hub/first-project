@@ -843,3 +843,330 @@ select {
     flex-direction: column;
   }
 }
+
+:root {
+  --coach-bg: #eef4fb;
+  --coach-ink: #0f172a;
+  --coach-panel: rgba(255, 255, 255, 0.88);
+  --coach-panel-strong: #ffffff;
+  --coach-line: rgba(15, 23, 42, 0.08);
+  --coach-accent: #2563eb;
+  --coach-accent-strong: #1d4ed8;
+  --coach-success: #059669;
+  --coach-warning: #c2410c;
+  --coach-shadow: 0 24px 60px rgba(15, 23, 42, 0.12);
+}
+
+body {
+  background:
+    radial-gradient(circle at top left, rgba(37, 99, 235, 0.14), transparent 28%),
+    radial-gradient(circle at right bottom, rgba(15, 23, 42, 0.1), transparent 26%),
+    linear-gradient(180deg, #f8fbff 0%, #eef4fb 100%);
+  color: var(--coach-ink);
+}
+
+.coach-shell {
+  width: min(1180px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 28px 0 48px;
+}
+
+.coach-header,
+.coach-header-actions,
+.coach-section-head,
+.coach-summary-head,
+.coach-form-actions,
+.coach-history-card-head,
+.coach-metrics-grid,
+.coach-dashboard-grid,
+.coach-form-grid,
+.coach-history-metrics {
+  display: flex;
+  gap: 16px;
+}
+
+.coach-header,
+.coach-summary-head,
+.coach-section-head,
+.coach-form-actions,
+.coach-history-card-head {
+  justify-content: space-between;
+  align-items: center;
+}
+
+.coach-header {
+  margin-bottom: 22px;
+}
+
+.coach-header strong {
+  display: block;
+  margin-top: 8px;
+  font-size: clamp(32px, 5vw, 52px);
+  letter-spacing: -0.05em;
+}
+
+.coach-panel {
+  background: var(--coach-panel);
+  border: 1px solid var(--coach-line);
+  border-radius: 28px;
+  box-shadow: var(--coach-shadow);
+  backdrop-filter: blur(16px);
+}
+
+.coach-section-label {
+  display: inline-flex;
+  width: fit-content;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(37, 99, 235, 0.1);
+  color: var(--coach-accent-strong);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.coach-primary-button,
+.coach-secondary-button,
+.coach-text-button {
+  border: 0;
+  cursor: pointer;
+  font: inherit;
+}
+
+.coach-primary-button {
+  min-height: 52px;
+  padding: 0 18px;
+  border-radius: 16px;
+  background: linear-gradient(180deg, #3b82f6 0%, #2563eb 100%);
+  color: white;
+  font-weight: 800;
+}
+
+.coach-secondary-button {
+  min-height: 48px;
+  padding: 0 16px;
+  border-radius: 16px;
+  background: rgba(37, 99, 235, 0.08);
+  color: var(--coach-ink);
+  font-weight: 700;
+}
+
+.coach-text-button {
+  padding: 0;
+  background: transparent;
+  color: var(--coach-accent-strong);
+  font-weight: 700;
+}
+
+.coach-dashboard,
+.coach-form-shell,
+.coach-history-screen {
+  display: grid;
+  gap: 18px;
+}
+
+.coach-summary-card,
+.coach-empty-state,
+.coach-form-shell,
+.coach-history-screen,
+.coach-metric-card {
+  padding: 24px;
+}
+
+.coach-summary-card h1,
+.coach-empty-state h1,
+.coach-form-shell h1,
+.coach-history-screen h1 {
+  margin: 14px 0 10px;
+  font-size: clamp(28px, 4vw, 42px);
+  letter-spacing: -0.04em;
+}
+
+.coach-summary-copy,
+.coach-empty-state p {
+  margin: 0;
+  line-height: 1.7;
+  color: rgba(15, 23, 42, 0.74);
+}
+
+.coach-action-list,
+.coach-history-preview,
+.coach-history-list,
+.coach-error-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.coach-action-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.coach-action-list li {
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: rgba(15, 23, 42, 0.04);
+}
+
+.coach-metrics-grid {
+  align-items: stretch;
+}
+
+.coach-metrics-grid > * {
+  flex: 1 1 0;
+}
+
+.coach-metric-card strong {
+  display: block;
+  margin-top: 10px;
+  font-size: 30px;
+}
+
+.coach-metric-card p,
+.coach-muted {
+  margin: 8px 0 0;
+  color: rgba(15, 23, 42, 0.62);
+}
+
+.coach-dashboard-grid {
+  align-items: start;
+}
+
+.coach-dashboard-grid > *:first-child {
+  flex: 1.15 1 0;
+}
+
+.coach-dashboard-grid > *:last-child {
+  flex: 0.85 1 0;
+}
+
+.coach-dashboard-grid > * {
+  padding: 22px;
+}
+
+.coach-trend-chart {
+  display: grid;
+  gap: 12px;
+}
+
+.coach-trend-chart svg {
+  width: 100%;
+  height: 220px;
+  border-radius: 18px;
+  background:
+    linear-gradient(180deg, rgba(37, 99, 235, 0.06), rgba(37, 99, 235, 0.02)),
+    repeating-linear-gradient(
+      to right,
+      rgba(15, 23, 42, 0.08) 0,
+      rgba(15, 23, 42, 0.08) 1px,
+      transparent 1px,
+      transparent 25%
+    ),
+    repeating-linear-gradient(
+      to bottom,
+      rgba(15, 23, 42, 0.06) 0,
+      rgba(15, 23, 42, 0.06) 1px,
+      transparent 1px,
+      transparent 25%
+    );
+}
+
+.coach-trend-line {
+  stroke-width: 3;
+}
+
+.coach-trend-line-weight {
+  stroke: #2563eb;
+}
+
+.coach-trend-line-muscle {
+  stroke: #0f172a;
+}
+
+.coach-trend-line-fat {
+  stroke: #059669;
+}
+
+.coach-trend-labels {
+  display: flex;
+  justify-content: space-between;
+  color: rgba(15, 23, 42, 0.62);
+  font-size: 13px;
+}
+
+.coach-history-preview,
+.coach-history-list {
+  display: grid;
+  gap: 12px;
+}
+
+.coach-history-preview li,
+.coach-history-card {
+  display: grid;
+  gap: 8px;
+  padding: 16px;
+  border-radius: 18px;
+  background: rgba(15, 23, 42, 0.04);
+}
+
+.coach-history-preview li span,
+.coach-history-card span,
+.coach-history-card p {
+  color: rgba(15, 23, 42, 0.68);
+}
+
+.coach-form-grid {
+  flex-wrap: wrap;
+}
+
+.coach-field {
+  display: grid;
+  gap: 8px;
+  flex: 1 1 220px;
+}
+
+.coach-field input,
+.coach-field textarea {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid var(--coach-line);
+  border-radius: 16px;
+  background: var(--coach-panel-strong);
+}
+
+.coach-error-list,
+.coach-warning {
+  padding: 14px 16px;
+  border-radius: 16px;
+}
+
+.coach-error-list {
+  background: rgba(194, 65, 12, 0.08);
+  color: var(--coach-warning);
+}
+
+.coach-warning {
+  background: rgba(37, 99, 235, 0.08);
+  color: var(--coach-accent-strong);
+}
+
+@media (max-width: 860px) {
+  .coach-header,
+  .coach-header-actions,
+  .coach-summary-head,
+  .coach-section-head,
+  .coach-dashboard-grid,
+  .coach-metrics-grid,
+  .coach-form-grid,
+  .coach-history-metrics {
+    flex-direction: column;
+  }
+
+  .coach-shell {
+    width: min(100%, calc(100% - 20px));
+    padding-top: 16px;
+  }
+}

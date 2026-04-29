@@ -1,33 +1,15 @@
-# Yakitei Kiosk
+# Weekly Body Composition Coach
 
-`야키테이` 야끼소바 가게를 위한 시연용 키오스크 웹앱입니다.
+주 1회 체성분 체크인을 저장하고, 그 숫자를 다음 주 운동 방향으로 번역해주는 정적 웹 앱입니다.
 
 ## What it does
 
-- `매장 식사` / `포장` 주문 시작
-- 사진 중심 메뉴보드
-- 야끼소바 2종 + 음료 4종 주문
-- 토핑 선택과 실시간 인기 조합 추천
-- 장바구니에서 `+ / - / 삭제` 조작
-- 결제 후 추천 조합 순위 즉시 갱신
-- GitHub Pages 배포용 정적 export
-
-## Menu
-
-- 기본 야끼소바 (데리야끼) - 11,000원
-- 소금 야끼소바 - 11,000원
-- 콜라 - 2,000원
-- 사이다 - 2,000원
-- 생맥주 - 5,000원
-- 하이볼 - 7,000원
-
-## Toppings
-
-- 오징어새우 - 1,500원
-- 비엔나 - 1,500원
-- 면 추가 - 1,000원
-- 계란 프라이 추가 - 1,000원
-- 치즈 추가 - 1,000원
+- 체중, 골격근량, 체지방률 주간 체크인 저장
+- 최근 4주 추이 시각화
+- 이번 주 코치 카드와 액션 리스트 제공
+- 최근 체크인 히스토리 보기
+- `localStorage` 기반 브라우저 저장
+- GitHub Pages 정적 배포
 
 ## Run locally
 
@@ -47,4 +29,4 @@ npm run build
 
 ## Deploy
 
-`main` 브랜치에 push 하면 `.github/workflows/deploy-pages.yml` 이 GitHub Pages용 정적 사이트를 배포하도록 설정되어 있습니다.
+`main` 브랜치에 push 하면 `.github/workflows/deploy-pages.yml`을 통해 GitHub Pages로 정적 배포됩니다.
