@@ -179,6 +179,7 @@ test("BodyCompositionApp renders a minimal title home on first load", () => {
 
   assert.match(html, /data-screen="landing"/);
   assert.match(html, /data-home-theme="gym"/);
+  assert.match(html, /data-home-tone="bright"/);
   assert.match(html, /주간체크/);
   assert.match(html, /data-action="enter-dashboard"/);
 });

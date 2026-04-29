@@ -1006,9 +1006,10 @@ body {
   position: relative;
   overflow: hidden;
   background:
-    radial-gradient(circle at 50% 12%, rgba(255, 255, 255, 0.08), transparent 18%),
-    radial-gradient(circle at top left, rgba(220, 38, 38, 0.16), transparent 26%),
-    linear-gradient(180deg, #0f1216 0%, #090b0e 46%, #050608 100%);
+    radial-gradient(circle at 50% 10%, rgba(255, 255, 255, 0.22), transparent 16%),
+    radial-gradient(circle at top left, rgba(37, 99, 235, 0.16), transparent 24%),
+    radial-gradient(circle at top right, rgba(148, 163, 184, 0.18), transparent 22%),
+    linear-gradient(180deg, #eaf2fb 0%, #dce8f6 38%, #cfd8e5 100%);
 }
 
 .coach-home-screen::before,
@@ -1021,44 +1022,44 @@ body {
 
 .coach-home-screen::before {
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent 28%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.2), transparent 28%),
     repeating-linear-gradient(
       90deg,
-      rgba(255, 255, 255, 0.018) 0,
-      rgba(255, 255, 255, 0.018) 1px,
+      rgba(15, 23, 42, 0.035) 0,
+      rgba(15, 23, 42, 0.035) 1px,
       transparent 1px,
       transparent 96px
     );
-  opacity: 0.9;
+  opacity: 0.72;
 }
 
 .coach-home-screen::after {
   inset: auto 0 0;
   height: 42%;
   background:
-    linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.28) 12%, rgba(0, 0, 0, 0.52) 100%),
+    linear-gradient(180deg, transparent 0%, rgba(69, 85, 107, 0.16) 14%, rgba(51, 65, 85, 0.28) 100%),
     repeating-linear-gradient(
       135deg,
-      rgba(255, 255, 255, 0.028) 0,
-      rgba(255, 255, 255, 0.028) 12px,
-      rgba(0, 0, 0, 0.04) 12px,
-      rgba(0, 0, 0, 0.04) 24px
+      rgba(255, 255, 255, 0.08) 0,
+      rgba(255, 255, 255, 0.08) 12px,
+      rgba(15, 23, 42, 0.03) 12px,
+      rgba(15, 23, 42, 0.03) 24px
     );
 }
 
 .coach-home-entry {
   width: min(520px, 100%);
   padding: 54px 34px 46px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.42);
   border-radius: 36px;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.03)),
-    linear-gradient(145deg, rgba(20, 23, 28, 0.96), rgba(9, 11, 14, 0.94));
+    linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.72)),
+    linear-gradient(145deg, rgba(243, 247, 252, 0.98), rgba(223, 232, 244, 0.94));
   box-shadow:
-    0 30px 80px rgba(0, 0, 0, 0.5),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    inset 0 -1px 0 rgba(255, 255, 255, 0.04);
-  color: #f8fafc;
+    0 24px 60px rgba(15, 23, 42, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.72),
+    inset 0 -1px 0 rgba(148, 163, 184, 0.14);
+  color: #0f172a;
   cursor: pointer;
   display: grid;
   gap: 14px;
@@ -1074,11 +1075,11 @@ body {
 
 .coach-home-entry:hover {
   transform: translateY(-2px);
-  border-color: rgba(239, 68, 68, 0.24);
+  border-color: rgba(37, 99, 235, 0.3);
   box-shadow:
-    0 36px 90px rgba(0, 0, 0, 0.56),
-    0 0 0 1px rgba(239, 68, 68, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    0 28px 70px rgba(15, 23, 42, 0.18),
+    0 0 0 1px rgba(37, 99, 235, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.76);
 }
 
 .coach-home-entry::before {
@@ -1086,7 +1087,7 @@ body {
   position: absolute;
   inset: 16px;
   border-radius: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(15, 23, 42, 0.05);
   pointer-events: none;
 }
 
@@ -1106,7 +1107,7 @@ body {
   letter-spacing: -0.11em;
   line-height: 0.92;
   transform: scaleY(1.04);
-  text-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  text-shadow: 0 8px 22px rgba(255, 255, 255, 0.42);
 }
 
 .coach-home-mark,
@@ -1119,14 +1120,14 @@ body {
   width: 68px;
   height: 8px;
   border-radius: 999px;
-  background: linear-gradient(90deg, #ef4444 0%, #fb7185 100%);
+  background: linear-gradient(90deg, #2563eb 0%, #60a5fa 100%);
   box-shadow:
-    0 0 0 1px rgba(239, 68, 68, 0.24),
-    0 0 18px rgba(239, 68, 68, 0.34);
+    0 0 0 1px rgba(37, 99, 235, 0.22),
+    0 0 18px rgba(96, 165, 250, 0.26);
 }
 
 .coach-home-hint {
-  color: rgba(226, 232, 240, 0.64);
+  color: rgba(15, 23, 42, 0.56);
   font-family:
     "Bahnschrift",
     "DIN Alternate",

@@ -6,7 +6,12 @@ type LandingScreenProps = {
 
 export function LandingScreen({ onEnterDashboard }: LandingScreenProps) {
   return (
-    <section className="coach-home-screen" data-home-theme="gym" data-screen="landing">
+    <section
+      className="coach-home-screen"
+      data-home-theme="gym"
+      data-home-tone="bright"
+      data-screen="landing"
+    >
       <button
         className="coach-home-entry"
         data-action="enter-dashboard"
