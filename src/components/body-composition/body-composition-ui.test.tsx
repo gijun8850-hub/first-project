@@ -86,8 +86,12 @@ test("DashboardScreen renders summary cards and clickable history preview rows",
   assert.match(html, /data-metric-card="weight"/);
   assert.match(html, /data-metric-card="skeletal-muscle"/);
   assert.match(html, /data-metric-card="body-fat"/);
+  assert.match(html, /data-consistency-summary="true"/);
+  assert.match(html, /data-weekly-progress="true"/);
   assert.match(html, /data-history-preview="true"/);
   assert.match(html, /data-record-trigger="latest"/);
+  assert.match(html, /data-trend-detail="true"/);
+  assert.match(html, /data-trend-series="weightKg"/);
 });
 
 test("DashboardScreen renders a record dialog when a preview row is selected", () => {
@@ -170,9 +174,10 @@ test("GoalScreen renders goal form fields and action buttons", () => {
   assert.match(html, /목표 삭제/);
 });
 
-test("BodyCompositionApp renders the dashboard shell on first load", () => {
+test("BodyCompositionApp renders the landing home on first load", () => {
   const html = renderToStaticMarkup(<BodyCompositionApp />);
 
-  assert.match(html, /data-dashboard="true"/);
-  assert.match(html, /data-action="open-goal-settings"/);
+  assert.match(html, /data-screen="landing"/);
+  assert.match(html, /data-action="start-check-in"/);
+  assert.match(html, /data-action="go-dashboard"/);
 });

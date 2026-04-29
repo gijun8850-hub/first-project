@@ -5,6 +5,7 @@ import { CheckInScreen } from "@/components/body-composition/check-in-screen";
 import { DashboardScreen } from "@/components/body-composition/dashboard-screen";
 import { GoalScreen } from "@/components/body-composition/goal-screen";
 import { HistoryScreen } from "@/components/body-composition/history-screen";
+import { LandingScreen } from "@/components/body-composition/landing-screen";
 import {
   readBodyCompositionStateFromStorage,
   writeBodyCompositionStateToStorage,
@@ -26,7 +27,8 @@ import type {
   GoalDraft,
 } from "@/types/body-composition";
 
-type View = "dashboard" | "check-in" | "history" | "goal";
+type Screen = "landing" | "dashboard";
+type ModalView = "check-in" | "history" | "goal" | null;
 
 function createEmptyDraft(): CheckInDraft {
   return {
@@ -50,7 +52,8 @@ function todayDate() {
 }
 
 export function BodyCompositionApp() {
-  const [view, setView] = useState<View>("dashboard");
+  const [screen, setScreen] = useState<Screen>("landing");
+  const [modalView, setModalView] = useState<ModalView>(null);
   const [checkIns, setCheckIns] = useState<CheckInRecord[]>([]);
   const [goal, setGoal] = useState<BodyCompositionGoal | null>(null);
   const [draft, setDraft] = useState<CheckInDraft>(createEmptyDraft());
@@ -87,14 +90,37 @@ export function BodyCompositionApp() {
     });
   }, [checkIns, goal, hasHydrated]);
 
+  function goLandingHome() {
+    setModalView(null);
+    setGoalErrors([]);
+    setErrors([]);
+    setConfirmSuspiciousSave(false);
+    setEditingCheckInId(null);
+    setPendingDeleteCheckInId(null);
+    setSelectedCheckInId(null);
+    setScreen("landing");
+  }
+
+  function goDashboard() {
+    setModalView(null);
+    setGoalErrors([]);
+    setErrors([]);
+    setConfirmSuspiciousSave(false);
+    setEditingCheckInId(null);
+    setPendingDeleteCheckInId(null);
+    setSelectedCheckInId(null);
+    setScreen("dashboard");
+  }
+
   function openCheckIn() {
+    setScreen("dashboard");
+    setModalView("check-in");
     setErrors([]);
     setConfirmSuspiciousSave(false);
     setEditingCheckInId(null);
     setPendingDeleteCheckInId(null);
     setSelectedCheckInId(null);
     setDraft({ ...createEmptyDraft(), measuredAt: todayDate() });
-    setView("check-in");
   }
 
   function openEditCheckIn(id: string) {
@@ -104,22 +130,26 @@ export function BodyCompositionApp() {
       return;
     }
 
+    setScreen("dashboard");
+    setModalView("check-in");
     setErrors([]);
     setConfirmSuspiciousSave(false);
     setPendingDeleteCheckInId(null);
     setSelectedCheckInId(null);
     setEditingCheckInId(id);
     setDraft(createDraftFromRecord(selected));
-    setView("check-in");
   }
 
   function openHistory() {
+    setScreen("dashboard");
+    setModalView("history");
     setPendingDeleteCheckInId(null);
     setSelectedCheckInId(null);
-    setView("history");
   }
 
   function openGoalSettings() {
+    setScreen("dashboard");
+    setModalView("goal");
     setGoalErrors([]);
     setPendingDeleteCheckInId(null);
     setSelectedCheckInId(null);
@@ -131,11 +161,10 @@ export function BodyCompositionApp() {
           }
         : createEmptyGoalDraft(),
     );
-    setView("goal");
   }
 
   function closeOverlay() {
-    setView("dashboard");
+    setModalView(null);
     setGoalErrors([]);
     setEditingCheckInId(null);
     setPendingDeleteCheckInId(null);
@@ -143,7 +172,7 @@ export function BodyCompositionApp() {
   }
 
   function openCheckInDetail(id: string) {
-    setView("dashboard");
+    setScreen("dashboard");
     setSelectedCheckInId(id);
   }
 
@@ -187,7 +216,8 @@ export function BodyCompositionApp() {
     setConfirmSuspiciousSave(false);
     setEditingCheckInId(null);
     setSelectedCheckInId(null);
-    setView("dashboard");
+    setModalView(null);
+    setScreen("dashboard");
   }
 
   function handleGoalSave() {
@@ -203,14 +233,16 @@ export function BodyCompositionApp() {
       targetBodyFatPercent: Number(goalDraft.targetBodyFatPercent),
     });
     setGoalErrors([]);
-    setView("dashboard");
+    setModalView(null);
+    setScreen("dashboard");
   }
 
   function handleClearGoal() {
     setGoal(null);
     setGoalDraft(createEmptyGoalDraft());
     setGoalErrors([]);
-    setView("dashboard");
+    setModalView(null);
+    setScreen("dashboard");
   }
 
   function requestDeleteCheckIn(id: string) {
@@ -226,7 +258,8 @@ export function BodyCompositionApp() {
     setPendingDeleteCheckInId(null);
     setSelectedCheckInId(null);
     setEditingCheckInId(null);
-    setView("dashboard");
+    setModalView(null);
+    setScreen("dashboard");
   }
 
   const deleteTarget = pendingDeleteCheckInId
@@ -235,48 +268,72 @@ export function BodyCompositionApp() {
 
   return (
     <main className="coach-shell">
-      <header className="coach-header">
-        <div>
-          <span className="coach-section-label">주간 체성분 코치</span>
-          <strong>이번 주 숫자를 다음 행동으로 바꾸기</strong>
-        </div>
+      {screen === "landing" ? (
+        <LandingScreen
+          checkIns={checkIns}
+          goal={goal}
+          onGoDashboard={goDashboard}
+          onStartCheckIn={openCheckIn}
+        />
+      ) : (
+        <>
+          <header className="coach-header" data-screen="dashboard">
+            <div>
+              <div className="coach-header-nav">
+                <button
+                  className="coach-nav-button"
+                  data-action="go-home"
+                  onClick={goLandingHome}
+                  type="button"
+                >
+                  홈
+                </button>
+                <button
+                  className="coach-nav-button coach-nav-button-active"
+                  data-action="go-dashboard"
+                  onClick={goDashboard}
+                  type="button"
+                >
+                  대시보드
+                </button>
+              </div>
+              <strong>이번 주 숫자를 다음 행동으로 바꾸기</strong>
+            </div>
 
-        <div className="coach-header-actions">
-          <button
-            className="coach-secondary-button"
-            data-action="open-goal-settings"
-            onClick={openGoalSettings}
-            type="button"
-          >
-            목표 설정
-          </button>
-          <button
-            className="coach-secondary-button"
-            onClick={openHistory}
-            type="button"
-          >
-            기록 보기
-          </button>
-          <button className="coach-primary-button" onClick={openCheckIn} type="button">
-            체크인 추가
-          </button>
-        </div>
-      </header>
+            <div className="coach-header-actions">
+              <button
+                className="coach-secondary-button"
+                data-action="open-goal-settings"
+                onClick={openGoalSettings}
+                type="button"
+              >
+                목표 설정
+              </button>
+              <button className="coach-secondary-button" onClick={openHistory} type="button">
+                기록 보기
+              </button>
+              <button className="coach-primary-button" onClick={openCheckIn} type="button">
+                체크인 추가
+              </button>
+            </div>
+          </header>
 
-      <DashboardScreen
-        checkIns={checkIns}
-        goal={goal}
-        onAddCheckIn={openCheckIn}
-        onCloseCheckInDetail={() => setSelectedCheckInId(null)}
-        onEditCheckIn={openEditCheckIn}
-        onOpenCheckInDetail={openCheckInDetail}
-        onOpenGoalSettings={openGoalSettings}
-        onOpenHistory={openHistory}
-        onRequestDeleteCheckIn={requestDeleteCheckIn}
-        selectedCheckInId={selectedCheckInId}
-      />
+          <DashboardScreen
+            checkIns={checkIns}
+            goal={goal}
+            onAddCheckIn={openCheckIn}
+            onCloseCheckInDetail={() => setSelectedCheckInId(null)}
+            onEditCheckIn={openEditCheckIn}
+            onOpenCheckInDetail={openCheckInDetail}
+            onOpenGoalSettings={openGoalSettings}
+            onOpenHistory={openHistory}
+            onRequestDeleteCheckIn={requestDeleteCheckIn}
+            selectedCheckInId={selectedCheckInId}
+          />
+        </>
+      )}
 
-      {view === "check-in" ? (
+      {modalView === "check-in" ? (
         <div className="coach-modal-backdrop" onClick={closeOverlay}>
           <div
             aria-label="weekly check-in"
@@ -303,7 +360,7 @@ export function BodyCompositionApp() {
         </div>
       ) : null}
 
-      {view === "goal" ? (
+      {modalView === "goal" ? (
         <div className="coach-modal-backdrop" onClick={closeOverlay}>
           <div
             aria-label="goal settings"
@@ -326,7 +383,7 @@ export function BodyCompositionApp() {
         </div>
       ) : null}
 
-      {view === "history" ? (
+      {modalView === "history" ? (
         <div className="coach-modal-backdrop" onClick={closeOverlay}>
           <div
             aria-label="check-in history"

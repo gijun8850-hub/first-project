@@ -1,10 +1,12 @@
 import React from "react";
 import {
   buildCoachSummary,
+  buildConsistencySummary,
   buildGoalProgress,
   buildHistoryRows,
   buildMetricSnapshots,
   buildTrendPoints,
+  buildWeeklyProgressSummary,
 } from "@/lib/body-composition/coach-engine";
 import { TrendChart } from "@/components/body-composition/trend-chart";
 import type { BodyCompositionGoal, CheckInRecord } from "@/types/body-composition";
@@ -61,10 +63,12 @@ export function DashboardScreen({
 
   const metricIds = ["weight", "skeletal-muscle", "body-fat"];
   const summary = buildCoachSummary(checkIns);
+  const consistency = buildConsistencySummary(checkIns);
   const goalProgress = buildGoalProgress(checkIns, goal ?? null);
   const historyRows = buildHistoryRows(checkIns);
   const metrics = buildMetricSnapshots(checkIns);
   const points = buildTrendPoints(checkIns);
+  const weeklyProgress = buildWeeklyProgressSummary(checkIns, goal ?? null);
   const recentRows = historyRows.slice(0, 3);
   const selectedRow = selectedCheckInId
     ? historyRows.find((row) => row.id === selectedCheckInId)
@@ -128,6 +132,26 @@ export function DashboardScreen({
             목표를 저장하면 현재 숫자와 남은 차이를 같이 보여줍니다.
           </p>
         )}
+      </div>
+
+      <div className="coach-insight-grid">
+        <article
+          className="coach-panel coach-insight-card"
+          data-consistency-summary="true"
+        >
+          <span className="coach-section-label">연속 체크인</span>
+          <strong>{consistency.streakLabel}</strong>
+          <p>{consistency.supportingCopy}</p>
+        </article>
+
+        <article
+          className="coach-panel coach-insight-card"
+          data-weekly-progress="true"
+        >
+          <span className="coach-section-label">이번 주 진행</span>
+          <strong>{weeklyProgress}</strong>
+          <p>지금 흐름을 다시 보고 이번 주에 무엇을 유지할지 빠르게 판단할 수 있습니다.</p>
+        </article>
       </div>
 
       <div className="coach-metrics-grid">

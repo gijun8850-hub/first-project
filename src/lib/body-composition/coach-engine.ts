@@ -2,6 +2,7 @@ import type {
   BodyCompositionGoal,
   CheckInRecord,
   CoachSummary,
+  ConsistencySummary,
   GoalProgress,
   HistoryRow,
   MetricSnapshot,
@@ -26,6 +27,13 @@ function formatDateLabel(measuredAt: string) {
 function formatLongDate(measuredAt: string) {
   const [year, month, day] = measuredAt.split("-");
   return `${year}.${month}.${day}`;
+}
+
+function getDateDifferenceInDays(later: string, earlier: string) {
+  const laterDate = new Date(`${later}T00:00:00`);
+  const earlierDate = new Date(`${earlier}T00:00:00`);
+  const difference = laterDate.getTime() - earlierDate.getTime();
+  return Math.round(difference / (1000 * 60 * 60 * 24));
 }
 
 function formatSigned(value: number, suffix: string) {
@@ -185,6 +193,45 @@ export function buildTrendPoints(checkIns: CheckInRecord[]): TrendPoint[] {
     }));
 }
 
+export function buildConsistencySummary(
+  checkIns: CheckInRecord[],
+): ConsistencySummary {
+  const sorted = sortNewestFirst(checkIns);
+  const latest = sorted[0];
+
+  if (!latest) {
+    return {
+      streakCount: 0,
+      streakLabel: "아직 체크인을 시작하지 않았습니다.",
+      supportingCopy: "주 1회 체크인을 쌓으면 변화 흐름과 연속 기록이 함께 보입니다.",
+    };
+  }
+
+  let streakCount = 1;
+
+  for (let index = 0; index < sorted.length - 1; index += 1) {
+    const current = sorted[index];
+    const previous = sorted[index + 1];
+    const gap = getDateDifferenceInDays(current.measuredAt, previous.measuredAt);
+
+    if (gap >= 4 && gap <= 10) {
+      streakCount += 1;
+      continue;
+    }
+
+    break;
+  }
+
+  return {
+    streakCount,
+    streakLabel:
+      streakCount > 1
+        ? `${streakCount}주 연속 체크인 중`
+        : "이번 주 체크인을 시작했습니다.",
+    supportingCopy: `최근 체크인 ${formatLongDate(latest.measuredAt)} · 총 ${sorted.length}회 기록`,
+  };
+}
+
 export function buildGoalProgress(
   checkIns: CheckInRecord[],
   goal: BodyCompositionGoal | null,
@@ -217,6 +264,24 @@ export function buildGoalProgress(
     remainingBodyFatText: formatRemaining(bodyFatGap, "%p"),
     summary: `체중 ${formatRemaining(weightGap, "kg")} · 체지방률 ${formatRemaining(bodyFatGap, "%p")}`,
   };
+}
+
+export function buildWeeklyProgressSummary(
+  checkIns: CheckInRecord[],
+  goal: BodyCompositionGoal | null,
+) {
+  const consistency = buildConsistencySummary(checkIns);
+  const goalProgress = buildGoalProgress(checkIns, goal);
+
+  if (goalProgress) {
+    return `${consistency.streakLabel} · 체중 ${goalProgress.remainingWeightText}`;
+  }
+
+  if (checkIns.length > 0) {
+    return `${consistency.streakLabel} · 이번 주 체크인 기준으로 다음 행동을 업데이트했습니다.`;
+  }
+
+  return "첫 체크인을 추가하면 이번 주 진행 요약이 여기에 표시됩니다.";
 }
 
 export function buildHistoryRows(checkIns: CheckInRecord[]): HistoryRow[] {

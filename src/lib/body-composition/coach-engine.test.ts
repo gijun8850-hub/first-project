@@ -2,10 +2,12 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   buildCoachSummary,
+  buildConsistencySummary,
   buildGoalProgress,
   buildHistoryRows,
   buildMetricSnapshots,
   buildTrendPoints,
+  buildWeeklyProgressSummary,
 } from "@/lib/body-composition/coach-engine";
 import type { CheckInRecord } from "@/types/body-composition";
 
@@ -133,4 +135,22 @@ test("buildGoalProgress computes the remaining gap to the current goal", () => {
   assert.equal(progress?.targetBodyFatText, "15.0%");
   assert.match(progress?.remainingWeightText ?? "", /1.8kg/);
   assert.match(progress?.remainingBodyFatText ?? "", /1.4%p/);
+});
+
+test("buildConsistencySummary returns a weekly streak summary", () => {
+  const summary = buildConsistencySummary(onTrackCheckIns);
+
+  assert.equal(summary.streakCount, 4);
+  assert.match(summary.streakLabel, /4주 연속/);
+  assert.match(summary.supportingCopy, /최근 체크인/);
+});
+
+test("buildWeeklyProgressSummary blends consistency and goal progress", () => {
+  const summary = buildWeeklyProgressSummary(onTrackCheckIns, {
+    targetWeightKg: 73,
+    targetBodyFatPercent: 15,
+  });
+
+  assert.match(summary, /4주 연속/);
+  assert.match(summary, /1.8kg/);
 });

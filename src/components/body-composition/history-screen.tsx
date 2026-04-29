@@ -24,7 +24,7 @@ export function HistoryScreen({
         </div>
 
         <button className="coach-secondary-button" onClick={onBack} type="button">
-          홈으로
+          대시보드로
         </button>
       </div>
 

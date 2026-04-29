@@ -52,12 +52,20 @@ export type TrendPoint = {
   bodyFatPercent: number;
 };
 
+export type TrendSeriesKey = "weightKg" | "skeletalMuscleKg" | "bodyFatPercent";
+
 export type GoalProgress = {
   targetWeightText: string;
   targetBodyFatText: string;
   remainingWeightText: string;
   remainingBodyFatText: string;
   summary: string;
+};
+
+export type ConsistencySummary = {
+  streakCount: number;
+  streakLabel: string;
+  supportingCopy: string;
 };
 
 export type HistoryRow = {
