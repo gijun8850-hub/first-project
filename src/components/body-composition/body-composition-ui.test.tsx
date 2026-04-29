@@ -174,10 +174,11 @@ test("GoalScreen renders goal form fields and action buttons", () => {
   assert.match(html, /목표 삭제/);
 });
 
-test("BodyCompositionApp renders the landing home on first load", () => {
+test("BodyCompositionApp renders a minimal title home on first load", () => {
   const html = renderToStaticMarkup(<BodyCompositionApp />);
 
   assert.match(html, /data-screen="landing"/);
-  assert.match(html, /data-action="start-check-in"/);
-  assert.match(html, /data-action="go-dashboard"/);
+  assert.match(html, /data-home-theme="gym"/);
+  assert.match(html, /주간체크/);
+  assert.match(html, /data-action="enter-dashboard"/);
 });

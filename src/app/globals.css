@@ -999,6 +999,146 @@ body {
   gap: 18px;
 }
 
+.coach-home-screen {
+  min-height: calc(100vh - 56px);
+  display: grid;
+  place-items: center;
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 50% 12%, rgba(255, 255, 255, 0.08), transparent 18%),
+    radial-gradient(circle at top left, rgba(220, 38, 38, 0.16), transparent 26%),
+    linear-gradient(180deg, #0f1216 0%, #090b0e 46%, #050608 100%);
+}
+
+.coach-home-screen::before,
+.coach-home-screen::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.coach-home-screen::before {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent 28%),
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.018) 0,
+      rgba(255, 255, 255, 0.018) 1px,
+      transparent 1px,
+      transparent 96px
+    );
+  opacity: 0.9;
+}
+
+.coach-home-screen::after {
+  inset: auto 0 0;
+  height: 42%;
+  background:
+    linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.28) 12%, rgba(0, 0, 0, 0.52) 100%),
+    repeating-linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.028) 0,
+      rgba(255, 255, 255, 0.028) 12px,
+      rgba(0, 0, 0, 0.04) 12px,
+      rgba(0, 0, 0, 0.04) 24px
+    );
+}
+
+.coach-home-entry {
+  width: min(520px, 100%);
+  padding: 54px 34px 46px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 36px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.03)),
+    linear-gradient(145deg, rgba(20, 23, 28, 0.96), rgba(9, 11, 14, 0.94));
+  box-shadow:
+    0 30px 80px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.04);
+  color: #f8fafc;
+  cursor: pointer;
+  display: grid;
+  gap: 14px;
+  justify-items: center;
+  text-align: center;
+  backdrop-filter: blur(16px);
+  position: relative;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    border-color 0.18s ease;
+}
+
+.coach-home-entry:hover {
+  transform: translateY(-2px);
+  border-color: rgba(239, 68, 68, 0.24);
+  box-shadow:
+    0 36px 90px rgba(0, 0, 0, 0.56),
+    0 0 0 1px rgba(239, 68, 68, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.coach-home-entry::before {
+  content: "";
+  position: absolute;
+  inset: 16px;
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  pointer-events: none;
+}
+
+.coach-home-entry strong {
+  position: relative;
+  z-index: 1;
+  font-size: clamp(48px, 8vw, 88px);
+  font-family:
+    "Arial Black",
+    "Bahnschrift",
+    "Segoe UI",
+    "Apple SD Gothic Neo",
+    "Malgun Gothic",
+    "Noto Sans KR",
+    sans-serif;
+  font-weight: 900;
+  letter-spacing: -0.11em;
+  line-height: 0.92;
+  transform: scaleY(1.04);
+  text-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+}
+
+.coach-home-mark,
+.coach-home-hint {
+  position: relative;
+  z-index: 1;
+}
+
+.coach-home-mark {
+  width: 68px;
+  height: 8px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #ef4444 0%, #fb7185 100%);
+  box-shadow:
+    0 0 0 1px rgba(239, 68, 68, 0.24),
+    0 0 18px rgba(239, 68, 68, 0.34);
+}
+
+.coach-home-hint {
+  color: rgba(226, 232, 240, 0.64);
+  font-family:
+    "Bahnschrift",
+    "DIN Alternate",
+    "Arial Narrow",
+    "Segoe UI",
+    sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
 .coach-landing-topbar,
 .coach-landing-actions,
 .coach-landing-metric-grid,
@@ -1583,6 +1723,11 @@ body {
   .coach-shell {
     width: min(100%, calc(100% - 20px));
     padding-top: 16px;
+  }
+
+  .coach-home-entry {
+    padding: 40px 24px;
+    border-radius: 28px;
   }
 
   .coach-trend-detail {

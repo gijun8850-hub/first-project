@@ -269,12 +269,7 @@ export function BodyCompositionApp() {
   return (
     <main className="coach-shell">
       {screen === "landing" ? (
-        <LandingScreen
-          checkIns={checkIns}
-          goal={goal}
-          onGoDashboard={goDashboard}
-          onStartCheckIn={openCheckIn}
-        />
+        <LandingScreen onEnterDashboard={goDashboard} />
       ) : (
         <>
           <header className="coach-header" data-screen="dashboard">
