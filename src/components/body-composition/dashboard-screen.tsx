@@ -2,6 +2,7 @@ import React from "react";
 import {
   buildCoachSummary,
   buildConsistencySummary,
+  buildCurrentStatusSummary,
   buildGoalProgress,
   buildHistoryRows,
   buildMetricSnapshots,
@@ -44,9 +45,9 @@ export function DashboardScreen({
         data-empty-state="true"
       >
         <span className="coach-section-label">주간 코치 시작</span>
-        <h1>첫 주간 체크인을 추가해 기준선을 만드세요.</h1>
+        <h1>첫 주간 체크인을 추가하고 기준선을 만들어보세요.</h1>
         <p>
-          첫 기록을 남기면 다음 주부터 체중, 골격근량, 체지방률 흐름을 읽어서
+          첫 기록을 남기면 다음 주부터 체중, 골격근량, 체지방률 흐름을 읽고
           이번 주 운동 방향을 제안합니다.
         </p>
         <button
@@ -63,6 +64,7 @@ export function DashboardScreen({
 
   const metricIds = ["weight", "skeletal-muscle", "body-fat"];
   const summary = buildCoachSummary(checkIns);
+  const currentStatus = buildCurrentStatusSummary(checkIns);
   const consistency = buildConsistencySummary(checkIns);
   const goalProgress = buildGoalProgress(checkIns, goal ?? null);
   const historyRows = buildHistoryRows(checkIns);
@@ -72,6 +74,9 @@ export function DashboardScreen({
   const recentRows = historyRows.slice(0, 3);
   const selectedRow = selectedCheckInId
     ? historyRows.find((row) => row.id === selectedCheckInId)
+    : undefined;
+  const selectedCheckIn = selectedCheckInId
+    ? checkIns.find((checkIn) => checkIn.id === selectedCheckInId)
     : undefined;
 
   return (
@@ -87,6 +92,17 @@ export function DashboardScreen({
           >
             체크인 추가
           </button>
+        </div>
+
+        <div
+          className={`coach-current-status coach-current-status-${currentStatus.tone}`}
+          data-current-status="true"
+        >
+          <div className="coach-current-status-copy">
+            <span className="coach-current-status-badge">{currentStatus.label}</span>
+            <strong>{currentStatus.summary}</strong>
+          </div>
+          <p>{currentStatus.detail}</p>
         </div>
 
         <h1>{summary.headline}</h1>
@@ -129,7 +145,7 @@ export function DashboardScreen({
           </>
         ) : (
           <p className="coach-summary-copy">
-            목표를 저장하면 현재 숫자와 남은 차이를 같이 보여줍니다.
+            목표를 저장하면 현재 수치와 남은 차이를 함께 보여줍니다.
           </p>
         )}
       </div>
@@ -207,7 +223,7 @@ export function DashboardScreen({
         </article>
       </div>
 
-      {selectedRow ? (
+      {selectedRow && selectedCheckIn ? (
         <div className="coach-modal-backdrop">
           <article
             aria-label="selected check-in details"
@@ -235,6 +251,14 @@ export function DashboardScreen({
               <p className="coach-muted">{selectedRow.deltaSummary}</p>
 
               <div className="coach-detail-metrics">
+                <div className="coach-detail-metric">
+                  <span>키</span>
+                  <strong>
+                    {selectedCheckIn.heightCm === null
+                      ? "미입력"
+                      : `${selectedCheckIn.heightCm.toFixed(1)}cm`}
+                  </strong>
+                </div>
                 <div className="coach-detail-metric">
                   <span>체중</span>
                   <strong>{selectedRow.weightText}</strong>

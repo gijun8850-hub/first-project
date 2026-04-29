@@ -12,21 +12,42 @@ export type BodyCompositionStorageState = {
 
 type StorageLike = Pick<Storage, "getItem" | "setItem">;
 
-function isCheckInRecord(value: unknown): value is CheckInRecord {
+function normalizeCheckInRecord(value: unknown): CheckInRecord | null {
   if (!value || typeof value !== "object") {
-    return false;
+    return null;
   }
 
-  const row = value as Partial<CheckInRecord>;
+  const row = value as Partial<CheckInRecord> & { heightCm?: unknown };
 
-  return (
-    typeof row.id === "string" &&
-    typeof row.measuredAt === "string" &&
-    typeof row.weightKg === "number" &&
-    typeof row.skeletalMuscleKg === "number" &&
-    typeof row.bodyFatPercent === "number" &&
-    typeof row.note === "string"
-  );
+  if (
+    typeof row.id !== "string" ||
+    typeof row.measuredAt !== "string" ||
+    typeof row.weightKg !== "number" ||
+    typeof row.skeletalMuscleKg !== "number" ||
+    typeof row.bodyFatPercent !== "number" ||
+    typeof row.note !== "string"
+  ) {
+    return null;
+  }
+
+  if (
+    row.heightCm !== undefined &&
+    row.heightCm !== null &&
+    typeof row.heightCm !== "number"
+  ) {
+    return null;
+  }
+
+  return {
+    id: row.id,
+    measuredAt: row.measuredAt,
+    heightCm:
+      typeof row.heightCm === "number" ? row.heightCm : null,
+    weightKg: row.weightKg,
+    skeletalMuscleKg: row.skeletalMuscleKg,
+    bodyFatPercent: row.bodyFatPercent,
+    note: row.note,
+  };
 }
 
 function isBodyCompositionGoal(value: unknown): value is BodyCompositionGoal {
@@ -58,6 +79,16 @@ function buildState(
   };
 }
 
+function parseCheckIns(value: unknown) {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value
+    .map((row) => normalizeCheckInRecord(row))
+    .filter((row): row is CheckInRecord => row !== null);
+}
+
 export function parseStoredBodyCompositionState(
   raw: string | null,
 ): BodyCompositionStorageState {
@@ -69,7 +100,7 @@ export function parseStoredBodyCompositionState(
     const parsed = JSON.parse(raw) as unknown;
 
     if (Array.isArray(parsed)) {
-      return buildState(parsed.filter(isCheckInRecord), null);
+      return buildState(parseCheckIns(parsed), null);
     }
 
     if (!parsed || typeof parsed !== "object") {
@@ -82,7 +113,7 @@ export function parseStoredBodyCompositionState(
     };
 
     return buildState(
-      Array.isArray(state.checkIns) ? state.checkIns.filter(isCheckInRecord) : [],
+      parseCheckIns(state.checkIns),
       isBodyCompositionGoal(state.goal) ? state.goal : null,
     );
   } catch {

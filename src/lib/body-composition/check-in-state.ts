@@ -9,6 +9,7 @@ function sortNewestFirst(checkIns: CheckInRecord[]) {
 export function createDraftFromRecord(checkIn: CheckInRecord): CheckInDraft {
   return {
     measuredAt: checkIn.measuredAt,
+    heightCm: checkIn.heightCm === null ? "" : String(checkIn.heightCm),
     weightKg: String(checkIn.weightKg),
     skeletalMuscleKg: String(checkIn.skeletalMuscleKg),
     bodyFatPercent: String(checkIn.bodyFatPercent),

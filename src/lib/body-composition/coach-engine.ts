@@ -1,8 +1,10 @@
 import type {
   BodyCompositionGoal,
   CheckInRecord,
+  CoachStatus,
   CoachSummary,
   ConsistencySummary,
+  CurrentStatusSummary,
   GoalProgress,
   HistoryRow,
   MetricSnapshot,
@@ -61,6 +63,21 @@ function buildDelta(current: CheckInRecord, previous: CheckInRecord) {
   };
 }
 
+function mapStatusLabel(status: CoachStatus) {
+  switch (status) {
+    case "baseline":
+      return "기록 시작";
+    case "on-track":
+      return "감량 진행 중";
+    case "protect-muscle":
+      return "근손실 주의";
+    case "plateau":
+      return "유지 구간";
+    case "drift":
+      return "조정 필요";
+  }
+}
+
 export function buildCoachSummary(checkIns: CheckInRecord[]): CoachSummary {
   const [latest, previous] = sortNewestFirst(checkIns);
 
@@ -68,11 +85,11 @@ export function buildCoachSummary(checkIns: CheckInRecord[]): CoachSummary {
     return {
       status: "baseline",
       headline: "기준선이 저장되었습니다.",
-      subline: "다음 주 체크인부터 추이 기반 코칭이 시작됩니다.",
+      subline: "다음 주 체크인부터 흐름을 읽고 이번 주 운동 방향을 제안합니다.",
       actionItems: [
         "같은 시간대와 비슷한 조건으로 다시 측정하세요.",
         "이번 주 운동 분할은 크게 바꾸지 마세요.",
-        "메모 한 줄로 컨디션을 남겨보세요.",
+        "메모에 수면이나 컨디션을 한 줄 남겨두세요.",
       ],
     };
   }
@@ -89,10 +106,10 @@ export function buildCoachSummary(checkIns: CheckInRecord[]): CoachSummary {
     return {
       status: "protect-muscle",
       headline: "감량은 진행 중이지만 근육 보호가 먼저입니다.",
-      subline: "이번 주는 적자를 더 밀지 말고 회복과 단백질을 먼저 지키세요.",
+      subline: "이번 주는 적자를 더 키우지 말고 회복과 단백질 섭취를 먼저 지키세요.",
       actionItems: [
         "유산소 추가는 이번 주만 보류하세요.",
-        "휴식일 단백질 섭취를 놓치지 마세요.",
+        "야식보다 수면과 회복 루틴을 먼저 챙기세요.",
         "주력 하체 운동 강도는 유지하세요.",
       ],
     };
@@ -115,11 +132,11 @@ export function buildCoachSummary(checkIns: CheckInRecord[]): CoachSummary {
     return {
       status: "plateau",
       headline: "이번 주는 유지 구간에 가깝습니다.",
-      subline: "루틴은 바꾸지 말고 활동량이나 식사 일관성에서 작은 조정 1개만 넣어보세요.",
+      subline: "루틴은 바꾸지 말고 식단이나 활동량 중 하나만 작게 조정하세요.",
       actionItems: [
         "운동 분할은 그대로 유지하세요.",
-        "짧은 유산소나 걸음 수를 조금만 늘리세요.",
-        "다음 주 숫자를 본 뒤에 크게 움직이세요.",
+        "유산소나 걸음 수를 조금만 늘려보세요.",
+        "다음 체크인까지 간식을 한 번 더 점검하세요.",
       ],
     };
   }
@@ -128,10 +145,10 @@ export function buildCoachSummary(checkIns: CheckInRecord[]): CoachSummary {
     return {
       status: "drift",
       headline: "최근 흐름이 목표에서 조금 벗어났습니다.",
-      subline: "이번 주는 루틴을 갈아엎기보다 생활 일관성과 컨디셔닝부터 다시 조이세요.",
+      subline: "이번 주는 루틴보다 생활 리듬과 식단 일관성을 먼저 조정하세요.",
       actionItems: [
-        "간식과 야식 빈도를 먼저 점검하세요.",
-        "짧은 컨디셔닝 2회를 다시 넣어보세요.",
+        "간식과 야식 빈도를 먼저 줄이세요.",
+        "짧은 유산소 2회를 다시 넣어보세요.",
         "주력 운동 중량은 무리하지 말고 유지하세요.",
       ],
     };
@@ -139,13 +156,65 @@ export function buildCoachSummary(checkIns: CheckInRecord[]): CoachSummary {
 
   return {
     status: "on-track",
-    headline: "숫자는 크게 흔들리지 않았고 현재 루틴을 이어갈 수 있습니다.",
-    subline: "이번 주는 현재 전략을 크게 바꾸지 말고 다음 체크인까지 일관성을 유지하세요.",
+    headline: "숫자는 크게 흔들리지 않았고 현재 루틴이 잘 맞고 있습니다.",
+    subline: "이번 주는 현재 계획을 유지하면서 다음 체크인까지 일관성을 챙기세요.",
     actionItems: [
       "주간 루틴을 그대로 유지하세요.",
-      "수면과 단백질을 우선순위에 두세요.",
-      "다음 체크인 메모에 컨디션을 한 줄 남기세요.",
+      "수면과 회복을 우선순위에 두세요.",
+      "다음 체크인 메모에 컨디션을 남겨두세요.",
     ],
+  };
+}
+
+export function buildCurrentStatusSummary(
+  checkIns: CheckInRecord[],
+): CurrentStatusSummary {
+  const latest = sortNewestFirst(checkIns)[0];
+  const coachSummary = buildCoachSummary(checkIns);
+  const label = mapStatusLabel(coachSummary.status);
+
+  if (!latest) {
+    return {
+      label: "기록 시작",
+      summary: "첫 체크인을 남기면 현재 상태가 여기에 나타납니다.",
+      detail: "체중, 골격근량, 체지방률을 넣으면 바로 주간 해석이 시작됩니다.",
+      tone: "steady",
+    };
+  }
+
+  const tone =
+    coachSummary.status === "on-track"
+      ? "good"
+      : coachSummary.status === "protect-muscle" || coachSummary.status === "drift"
+        ? "alert"
+        : "steady";
+
+  const summaryMap: Record<CoachStatus, string> = {
+    baseline: "첫 기록이라 아직 비교 흐름은 없지만 기준선은 잘 잡혔습니다.",
+    "on-track": "체지방이 안정적으로 내려가고 있어 지금 흐름을 유지하면 됩니다.",
+    "protect-muscle":
+      "체지방은 내려가지만 근육 보호가 필요한 구간이라 회복을 먼저 챙겨야 합니다.",
+    plateau: "체중과 체지방률이 크게 움직이지 않아 유지 구간으로 볼 수 있습니다.",
+    drift: "체지방 흐름이 흔들려 이번 주는 식단과 유산소를 다시 조정할 때입니다.",
+  };
+
+  if (latest.heightCm === null) {
+    return {
+      label,
+      summary: summaryMap[coachSummary.status],
+      detail: `체중 ${latest.weightKg.toFixed(1)}kg · 키를 입력하면 BMI도 같이 보여줍니다.`,
+      tone,
+    };
+  }
+
+  const heightMeter = latest.heightCm / 100;
+  const bmi = latest.weightKg / (heightMeter * heightMeter);
+
+  return {
+    label,
+    summary: summaryMap[coachSummary.status],
+    detail: `키 ${latest.heightCm.toFixed(1)}cm · BMI ${bmi.toFixed(1)} · 체지방률 ${latest.bodyFatPercent.toFixed(1)}%`,
+    tone,
   };
 }
 
@@ -250,7 +319,7 @@ export function buildGoalProgress(
       targetBodyFatText,
       remainingWeightText: "첫 체크인 후 계산",
       remainingBodyFatText: "첫 체크인 후 계산",
-      summary: "목표는 저장되었고 첫 체크인부터 남은 차이를 계산합니다.",
+      summary: "목표는 저장되었고 첫 체크인을 넣으면 남은 차이를 계산합니다.",
     };
   }
 
@@ -278,7 +347,7 @@ export function buildWeeklyProgressSummary(
   }
 
   if (checkIns.length > 0) {
-    return `${consistency.streakLabel} · 이번 주 체크인 기준으로 다음 행동을 업데이트했습니다.`;
+    return `${consistency.streakLabel} · 이번 주 기록이 다음 제안의 기준선이 됩니다.`;
   }
 
   return "첫 체크인을 추가하면 이번 주 진행 요약이 여기에 표시됩니다.";

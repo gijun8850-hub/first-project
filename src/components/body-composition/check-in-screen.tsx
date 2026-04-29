@@ -45,6 +45,16 @@ export function CheckInScreen({
         </label>
 
         <label className="coach-field">
+          <span>키 (cm)</span>
+          <input
+            inputMode="decimal"
+            name="heightCm"
+            value={draft.heightCm}
+            onChange={(event) => onChange("heightCm", event.target.value)}
+          />
+        </label>
+
+        <label className="coach-field">
           <span>체중 (kg)</span>
           <input
             inputMode="decimal"
@@ -95,7 +105,7 @@ export function CheckInScreen({
 
       {showSuspiciousWarning ? (
         <p className="coach-warning">
-          입력값이 일반적인 범위를 벗어납니다. 숫자를 다시 확인한 뒤 한 번 더 저장하세요.
+          입력값이 일반적인 범위를 벗어났습니다. 숫자를 다시 확인했으면 한 번 더 저장하세요.
         </p>
       ) : null}
 

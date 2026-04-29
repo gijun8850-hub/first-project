@@ -1,6 +1,7 @@
 export type CheckInRecord = {
   id: string;
   measuredAt: string;
+  heightCm: number | null;
   weightKg: number;
   skeletalMuscleKg: number;
   bodyFatPercent: number;
@@ -9,6 +10,7 @@ export type CheckInRecord = {
 
 export type CheckInDraft = {
   measuredAt: string;
+  heightCm: string;
   weightKg: string;
   skeletalMuscleKg: string;
   bodyFatPercent: string;
@@ -37,6 +39,15 @@ export type CoachSummary = {
   headline: string;
   subline: string;
   actionItems: string[];
+};
+
+export type CurrentStatusTone = "steady" | "good" | "alert";
+
+export type CurrentStatusSummary = {
+  label: string;
+  summary: string;
+  detail: string;
+  tone: CurrentStatusTone;
 };
 
 export type MetricSnapshot = {

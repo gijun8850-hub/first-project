@@ -33,6 +33,7 @@ type ModalView = "check-in" | "history" | "goal" | null;
 function createEmptyDraft(): CheckInDraft {
   return {
     measuredAt: "",
+    heightCm: "",
     weightKg: "",
     skeletalMuscleKg: "",
     bodyFatPercent: "",
@@ -49,6 +50,13 @@ function createEmptyGoalDraft(): GoalDraft {
 
 function todayDate() {
   return new Date().toISOString().slice(0, 10);
+}
+
+function getSuggestedHeight(checkIns: CheckInRecord[]) {
+  const latestWithHeight = [...checkIns].find((checkIn) => checkIn.heightCm !== null);
+  return latestWithHeight?.heightCm === null || latestWithHeight?.heightCm === undefined
+    ? ""
+    : String(latestWithHeight.heightCm);
 }
 
 export function BodyCompositionApp() {
@@ -90,7 +98,7 @@ export function BodyCompositionApp() {
     });
   }, [checkIns, goal, hasHydrated]);
 
-  function goLandingHome() {
+  function resetOverlayState() {
     setModalView(null);
     setGoalErrors([]);
     setErrors([]);
@@ -98,17 +106,15 @@ export function BodyCompositionApp() {
     setEditingCheckInId(null);
     setPendingDeleteCheckInId(null);
     setSelectedCheckInId(null);
+  }
+
+  function goLandingHome() {
+    resetOverlayState();
     setScreen("landing");
   }
 
   function goDashboard() {
-    setModalView(null);
-    setGoalErrors([]);
-    setErrors([]);
-    setConfirmSuspiciousSave(false);
-    setEditingCheckInId(null);
-    setPendingDeleteCheckInId(null);
-    setSelectedCheckInId(null);
+    resetOverlayState();
     setScreen("dashboard");
   }
 
@@ -120,7 +126,11 @@ export function BodyCompositionApp() {
     setEditingCheckInId(null);
     setPendingDeleteCheckInId(null);
     setSelectedCheckInId(null);
-    setDraft({ ...createEmptyDraft(), measuredAt: todayDate() });
+    setDraft({
+      ...createEmptyDraft(),
+      measuredAt: todayDate(),
+      heightCm: getSuggestedHeight(checkIns),
+    });
   }
 
   function openEditCheckIn(id: string) {
@@ -166,6 +176,8 @@ export function BodyCompositionApp() {
   function closeOverlay() {
     setModalView(null);
     setGoalErrors([]);
+    setErrors([]);
+    setConfirmSuspiciousSave(false);
     setEditingCheckInId(null);
     setPendingDeleteCheckInId(null);
     setSelectedCheckInId(null);
@@ -199,6 +211,7 @@ export function BodyCompositionApp() {
     const nextRecord: CheckInRecord = {
       id: editingCheckInId ?? crypto.randomUUID(),
       measuredAt: draft.measuredAt,
+      heightCm: Number(draft.heightCm),
       weightKg: Number(draft.weightKg),
       skeletalMuscleKg: Number(draft.skeletalMuscleKg),
       bodyFatPercent: Number(draft.bodyFatPercent),
@@ -343,11 +356,7 @@ export function BodyCompositionApp() {
               errors={errors}
               isEditing={Boolean(editingCheckInId)}
               showSuspiciousWarning={confirmSuspiciousSave}
-              onBack={() => {
-                setErrors([]);
-                setConfirmSuspiciousSave(false);
-                closeOverlay();
-              }}
+              onBack={closeOverlay}
               onChange={handleChange}
               onSave={handleSave}
             />

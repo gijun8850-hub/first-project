@@ -17,6 +17,7 @@ const checkIns: CheckInRecord[] = [
   {
     id: "latest",
     measuredAt: "2026-04-27",
+    heightCm: 178,
     weightKg: 74.8,
     skeletalMuscleKg: 33.1,
     bodyFatPercent: 16.4,
@@ -25,6 +26,7 @@ const checkIns: CheckInRecord[] = [
   {
     id: "previous",
     measuredAt: "2026-04-20",
+    heightCm: 178,
     weightKg: 75.4,
     skeletalMuscleKg: 33.2,
     bodyFatPercent: 16.8,
@@ -33,6 +35,7 @@ const checkIns: CheckInRecord[] = [
   {
     id: "older",
     measuredAt: "2026-04-13",
+    heightCm: 178,
     weightKg: 75.9,
     skeletalMuscleKg: 33.0,
     bodyFatPercent: 17.2,
@@ -42,6 +45,7 @@ const checkIns: CheckInRecord[] = [
 
 const draft: CheckInDraft = {
   measuredAt: "2026-04-27",
+  heightCm: "178",
   weightKg: "74.8",
   skeletalMuscleKg: "33.1",
   bodyFatPercent: "16.4",
@@ -82,6 +86,7 @@ test("DashboardScreen renders summary cards and clickable history preview rows",
   );
 
   assert.match(html, /data-coach-summary="true"/);
+  assert.match(html, /data-current-status="true"/);
   assert.match(html, /data-goal-summary="true"/);
   assert.match(html, /data-metric-card="weight"/);
   assert.match(html, /data-metric-card="skeletal-muscle"/);
@@ -120,6 +125,7 @@ test("DashboardScreen renders a record dialog when a preview row is selected", (
   assert.match(html, /Run intervals after upper-body day\./);
   assert.match(html, /data-action="edit-check-in"/);
   assert.match(html, /data-action="delete-check-in"/);
+  assert.match(html, /178\.0cm/);
 });
 
 test("CheckInScreen renders form fields and validation feedback", () => {
@@ -136,6 +142,7 @@ test("CheckInScreen renders form fields and validation feedback", () => {
 
   assert.match(html, /data-check-in-form="true"/);
   assert.match(html, /name="measuredAt"/);
+  assert.match(html, /name="heightCm"/);
   assert.match(html, /name="weightKg"/);
   assert.match(html, /data-error-list="true"/);
 });
@@ -179,7 +186,7 @@ test("BodyCompositionApp renders a minimal title home on first load", () => {
 
   assert.match(html, /data-screen="landing"/);
   assert.match(html, /data-home-theme="gym"/);
-  assert.match(html, /data-home-tone="bright"/);
+  assert.match(html, /data-home-tone="shared"/);
   assert.match(html, /주간체크/);
   assert.match(html, /data-action="enter-dashboard"/);
 });

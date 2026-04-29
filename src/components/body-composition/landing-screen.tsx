@@ -9,11 +9,11 @@ export function LandingScreen({ onEnterDashboard }: LandingScreenProps) {
     <section
       className="coach-home-screen"
       data-home-theme="gym"
-      data-home-tone="bright"
+      data-home-tone="shared"
       data-screen="landing"
     >
       <button
-        className="coach-home-entry"
+        className="coach-home-entry coach-panel"
         data-action="enter-dashboard"
         onClick={onEnterDashboard}
         type="button"

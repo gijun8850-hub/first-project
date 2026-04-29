@@ -1003,74 +1003,30 @@ body {
   min-height: calc(100vh - 56px);
   display: grid;
   place-items: center;
-  position: relative;
-  overflow: hidden;
-  background:
-    radial-gradient(circle at 50% 10%, rgba(255, 255, 255, 0.22), transparent 16%),
-    radial-gradient(circle at top left, rgba(37, 99, 235, 0.16), transparent 24%),
-    radial-gradient(circle at top right, rgba(148, 163, 184, 0.18), transparent 22%),
-    linear-gradient(180deg, #eaf2fb 0%, #dce8f6 38%, #cfd8e5 100%);
+  padding: 12px 0;
 }
 
 .coach-home-screen::before,
 .coach-home-screen::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-}
-
-.coach-home-screen::before {
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.2), transparent 28%),
-    repeating-linear-gradient(
-      90deg,
-      rgba(15, 23, 42, 0.035) 0,
-      rgba(15, 23, 42, 0.035) 1px,
-      transparent 1px,
-      transparent 96px
-    );
-  opacity: 0.72;
-}
-
-.coach-home-screen::after {
-  inset: auto 0 0;
-  height: 42%;
-  background:
-    linear-gradient(180deg, transparent 0%, rgba(69, 85, 107, 0.16) 14%, rgba(51, 65, 85, 0.28) 100%),
-    repeating-linear-gradient(
-      135deg,
-      rgba(255, 255, 255, 0.08) 0,
-      rgba(255, 255, 255, 0.08) 12px,
-      rgba(15, 23, 42, 0.03) 12px,
-      rgba(15, 23, 42, 0.03) 24px
-    );
+  display: none;
 }
 
 .coach-home-entry {
   width: min(520px, 100%);
   padding: 54px 34px 46px;
-  border: 1px solid rgba(255, 255, 255, 0.42);
   border-radius: 36px;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.72)),
-    linear-gradient(145deg, rgba(243, 247, 252, 0.98), rgba(223, 232, 244, 0.94));
-  box-shadow:
-    0 24px 60px rgba(15, 23, 42, 0.16),
-    inset 0 1px 0 rgba(255, 255, 255, 0.72),
-    inset 0 -1px 0 rgba(148, 163, 184, 0.14);
-  color: #0f172a;
+  color: var(--coach-ink);
   cursor: pointer;
   display: grid;
   gap: 14px;
   justify-items: center;
   text-align: center;
-  backdrop-filter: blur(16px);
   position: relative;
   transition:
     transform 0.18s ease,
     box-shadow 0.18s ease,
-    border-color 0.18s ease;
+    border-color 0.18s ease,
+    background-color 0.18s ease;
 }
 
 .coach-home-entry:hover {
@@ -1078,8 +1034,7 @@ body {
   border-color: rgba(37, 99, 235, 0.3);
   box-shadow:
     0 28px 70px rgba(15, 23, 42, 0.18),
-    0 0 0 1px rgba(37, 99, 235, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.76);
+    0 0 0 1px rgba(37, 99, 235, 0.08);
 }
 
 .coach-home-entry::before {
@@ -1087,7 +1042,7 @@ body {
   position: absolute;
   inset: 16px;
   border-radius: 24px;
-  border: 1px solid rgba(15, 23, 42, 0.05);
+  border: 1px solid rgba(15, 23, 42, 0.06);
   pointer-events: none;
 }
 
@@ -1104,10 +1059,10 @@ body {
     "Noto Sans KR",
     sans-serif;
   font-weight: 900;
-  letter-spacing: -0.11em;
+  letter-spacing: -0.09em;
   line-height: 0.92;
   transform: scaleY(1.04);
-  text-shadow: 0 8px 22px rgba(255, 255, 255, 0.42);
+  text-shadow: 0 8px 22px rgba(255, 255, 255, 0.28);
 }
 
 .coach-home-mark,
@@ -1293,6 +1248,55 @@ body {
   margin: 0;
   line-height: 1.7;
   color: rgba(15, 23, 42, 0.74);
+}
+
+.coach-current-status {
+  display: grid;
+  gap: 12px;
+  margin: 18px 0 22px;
+  padding: 18px 20px;
+  border-radius: 20px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.coach-current-status-good {
+  background: rgba(5, 150, 105, 0.08);
+}
+
+.coach-current-status-steady {
+  background: rgba(37, 99, 235, 0.06);
+}
+
+.coach-current-status-alert {
+  background: rgba(194, 65, 12, 0.08);
+}
+
+.coach-current-status-copy {
+  display: grid;
+  gap: 10px;
+}
+
+.coach-current-status-badge {
+  display: inline-flex;
+  width: fit-content;
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--coach-ink);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.coach-current-status strong {
+  font-size: clamp(22px, 3vw, 28px);
+  letter-spacing: -0.03em;
+}
+
+.coach-current-status p {
+  margin: 0;
+  color: rgba(15, 23, 42, 0.68);
 }
 
 .coach-action-list,
@@ -1659,7 +1663,7 @@ body {
 
 .coach-detail-metrics {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: 12px;
 }
 

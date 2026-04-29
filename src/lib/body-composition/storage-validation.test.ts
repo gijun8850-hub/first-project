@@ -3,10 +3,10 @@ import test from "node:test";
 import {
   BODY_COMPOSITION_STORAGE_KEY,
   parseStoredBodyCompositionState,
-  readBodyCompositionStateFromStorage,
   parseStoredCheckIns,
-  writeBodyCompositionStateToStorage,
+  readBodyCompositionStateFromStorage,
   readCheckInsFromStorage,
+  writeBodyCompositionStateToStorage,
   writeCheckInsToStorage,
 } from "@/lib/body-composition/storage";
 import {
@@ -36,6 +36,7 @@ test("parseStoredBodyCompositionState supports the legacy array payload", () => 
 
   assert.equal(state.goal, null);
   assert.equal(state.checkIns[0].id, "latest");
+  assert.equal(state.checkIns[0].heightCm, null);
 });
 
 test("readCheckInsFromStorage sorts newer check-ins first", () => {
@@ -45,6 +46,7 @@ test("readCheckInsFromStorage sorts newer check-ins first", () => {
         {
           id: "older",
           measuredAt: "2026-04-20",
+          heightCm: 178,
           weightKg: 75.4,
           skeletalMuscleKg: 33.2,
           bodyFatPercent: 16.8,
@@ -53,6 +55,7 @@ test("readCheckInsFromStorage sorts newer check-ins first", () => {
         {
           id: "latest",
           measuredAt: "2026-04-27",
+          heightCm: 178,
           weightKg: 74.8,
           skeletalMuscleKg: 33.1,
           bodyFatPercent: 16.4,
@@ -85,6 +88,7 @@ test("writeCheckInsToStorage serializes data under the expected key", () => {
     {
       id: "latest",
       measuredAt: "2026-04-27",
+      heightCm: 178,
       weightKg: 74.8,
       skeletalMuscleKg: 33.1,
       bodyFatPercent: 16.4,
@@ -94,6 +98,7 @@ test("writeCheckInsToStorage serializes data under the expected key", () => {
 
   assert.equal(savedKey, BODY_COMPOSITION_STORAGE_KEY);
   assert.match(savedValue, /74.8/);
+  assert.match(savedValue, /178/);
 });
 
 test("readBodyCompositionStateFromStorage returns goal data from object payloads", () => {
@@ -104,6 +109,7 @@ test("readBodyCompositionStateFromStorage returns goal data from object payloads
           {
             id: "latest",
             measuredAt: "2026-04-27",
+            heightCm: 178,
             weightKg: 74.8,
             skeletalMuscleKg: 33.1,
             bodyFatPercent: 16.4,
@@ -141,6 +147,7 @@ test("writeBodyCompositionStateToStorage serializes goal alongside check-ins", (
       {
         id: "latest",
         measuredAt: "2026-04-27",
+        heightCm: 178,
         weightKg: 74.8,
         skeletalMuscleKg: 33.1,
         bodyFatPercent: 16.4,
@@ -155,11 +162,13 @@ test("writeBodyCompositionStateToStorage serializes goal alongside check-ins", (
 
   assert.match(savedValue, /targetWeightKg/);
   assert.match(savedValue, /73/);
+  assert.match(savedValue, /heightCm/);
 });
 
 test("validateCheckInDraft requires date and all numeric fields", () => {
   const draft: CheckInDraft = {
     measuredAt: "",
+    heightCm: "",
     weightKg: "",
     skeletalMuscleKg: "",
     bodyFatPercent: "",
@@ -168,6 +177,7 @@ test("validateCheckInDraft requires date and all numeric fields", () => {
 
   assert.deepEqual(validateCheckInDraft(draft), [
     "측정 날짜를 입력하세요.",
+    "키를 입력하세요.",
     "체중을 입력하세요.",
     "골격근량을 입력하세요.",
     "체지방률을 입력하세요.",
@@ -189,6 +199,7 @@ test("validateGoalDraft requires both numeric target fields", () => {
 test("isSuspiciousCheckIn flags obviously invalid ranges", () => {
   assert.equal(
     isSuspiciousCheckIn({
+      heightCm: 178,
       weightKg: 74.8,
       skeletalMuscleKg: 33.1,
       bodyFatPercent: 16.4,
@@ -198,6 +209,7 @@ test("isSuspiciousCheckIn flags obviously invalid ranges", () => {
 
   assert.equal(
     isSuspiciousCheckIn({
+      heightCm: 244,
       weightKg: 12,
       skeletalMuscleKg: 3,
       bodyFatPercent: 72,

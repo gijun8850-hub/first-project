@@ -15,6 +15,12 @@ export function validateCheckInDraft(draft: CheckInDraft) {
     errors.push("측정 날짜를 입력하세요.");
   }
 
+  if (!draft.heightCm) {
+    errors.push("키를 입력하세요.");
+  } else if (!isFiniteNumber(draft.heightCm)) {
+    errors.push("키는 숫자로 입력하세요.");
+  }
+
   if (!draft.weightKg) {
     errors.push("체중을 입력하세요.");
   } else if (!isFiniteNumber(draft.weightKg)) {
@@ -55,9 +61,14 @@ export function validateGoalDraft(draft: GoalDraft) {
 }
 
 export function isSuspiciousCheckIn(
-  input: Pick<CheckInRecord, "weightKg" | "skeletalMuscleKg" | "bodyFatPercent">,
+  input: Pick<
+    CheckInRecord,
+    "heightCm" | "weightKg" | "skeletalMuscleKg" | "bodyFatPercent"
+  >,
 ) {
   return (
+    (input.heightCm !== null &&
+      (input.heightCm < 120 || input.heightCm > 230)) ||
     input.weightKg < 30 ||
     input.weightKg > 250 ||
     input.skeletalMuscleKg < 10 ||

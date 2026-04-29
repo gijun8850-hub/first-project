@@ -3,6 +3,7 @@ import test from "node:test";
 import {
   buildCoachSummary,
   buildConsistencySummary,
+  buildCurrentStatusSummary,
   buildGoalProgress,
   buildHistoryRows,
   buildMetricSnapshots,
@@ -15,6 +16,7 @@ const singleCheckIn: CheckInRecord[] = [
   {
     id: "checkin-1",
     measuredAt: "2026-04-27",
+    heightCm: 178,
     weightKg: 74.8,
     skeletalMuscleKg: 33.1,
     bodyFatPercent: 16.4,
@@ -26,6 +28,7 @@ const muscleDropCheckIns: CheckInRecord[] = [
   {
     id: "checkin-2",
     measuredAt: "2026-04-27",
+    heightCm: 178,
     weightKg: 74.2,
     skeletalMuscleKg: 32.6,
     bodyFatPercent: 16.1,
@@ -34,6 +37,7 @@ const muscleDropCheckIns: CheckInRecord[] = [
   {
     id: "checkin-1",
     measuredAt: "2026-04-20",
+    heightCm: 178,
     weightKg: 75.0,
     skeletalMuscleKg: 33.1,
     bodyFatPercent: 16.7,
@@ -45,6 +49,7 @@ const onTrackCheckIns: CheckInRecord[] = [
   {
     id: "checkin-4",
     measuredAt: "2026-04-27",
+    heightCm: 178,
     weightKg: 74.8,
     skeletalMuscleKg: 33.1,
     bodyFatPercent: 16.4,
@@ -53,6 +58,7 @@ const onTrackCheckIns: CheckInRecord[] = [
   {
     id: "checkin-3",
     measuredAt: "2026-04-20",
+    heightCm: 178,
     weightKg: 75.4,
     skeletalMuscleKg: 33.2,
     bodyFatPercent: 16.8,
@@ -61,6 +67,7 @@ const onTrackCheckIns: CheckInRecord[] = [
   {
     id: "checkin-2",
     measuredAt: "2026-04-13",
+    heightCm: 178,
     weightKg: 75.9,
     skeletalMuscleKg: 33.0,
     bodyFatPercent: 17.2,
@@ -69,6 +76,7 @@ const onTrackCheckIns: CheckInRecord[] = [
   {
     id: "checkin-1",
     measuredAt: "2026-04-06",
+    heightCm: 178,
     weightKg: 76.1,
     skeletalMuscleKg: 32.9,
     bodyFatPercent: 17.5,
@@ -92,6 +100,15 @@ test("buildCoachSummary protects muscle when both fat and muscle drop", () => {
   assert.match(summary.headline, /근육 보호/);
   assert.match(summary.subline, /회복/);
   assert.match(summary.actionItems.join(" "), /유산소/);
+});
+
+test("buildCurrentStatusSummary returns a readable body status with bmi detail", () => {
+  const summary = buildCurrentStatusSummary(onTrackCheckIns);
+
+  assert.equal(summary.label, "감량 진행 중");
+  assert.match(summary.summary, /체지방/);
+  assert.match(summary.detail, /178\.0cm/);
+  assert.match(summary.detail, /23.6/);
 });
 
 test("buildMetricSnapshots formats latest values with previous deltas", () => {
@@ -122,7 +139,7 @@ test("buildHistoryRows keeps the newest entry first with a baseline fallback", (
 
   assert.equal(rows[0].measuredAtLabel, "2026.04.27");
   assert.match(rows[0].deltaSummary, /체지방/);
-  assert.match(rows.at(-1)?.deltaSummary ?? "", /기준선/);
+  assert.match(rows.at(-1)?.deltaSummary ?? "", /첫 체크인 기준선/);
 });
 
 test("buildGoalProgress computes the remaining gap to the current goal", () => {
