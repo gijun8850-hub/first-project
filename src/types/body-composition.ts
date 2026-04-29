@@ -15,6 +15,16 @@ export type CheckInDraft = {
   note: string;
 };
 
+export type BodyCompositionGoal = {
+  targetWeightKg: number;
+  targetBodyFatPercent: number;
+};
+
+export type GoalDraft = {
+  targetWeightKg: string;
+  targetBodyFatPercent: string;
+};
+
 export type CoachStatus =
   | "baseline"
   | "on-track"
@@ -40,6 +50,14 @@ export type TrendPoint = {
   weightKg: number;
   skeletalMuscleKg: number;
   bodyFatPercent: number;
+};
+
+export type GoalProgress = {
+  targetWeightText: string;
+  targetBodyFatText: string;
+  remainingWeightText: string;
+  remainingBodyFatText: string;
+  summary: string;
 };
 
 export type HistoryRow = {

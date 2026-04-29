@@ -928,7 +928,8 @@ body {
 
 .coach-primary-button,
 .coach-secondary-button,
-.coach-text-button {
+.coach-text-button,
+.coach-danger-button {
   border: 0;
   cursor: pointer;
   font: inherit;
@@ -952,6 +953,15 @@ body {
   font-weight: 700;
 }
 
+.coach-danger-button {
+  min-height: 48px;
+  padding: 0 16px;
+  border-radius: 16px;
+  background: rgba(194, 65, 12, 0.12);
+  color: var(--coach-warning);
+  font-weight: 700;
+}
+
 .coach-text-button {
   padding: 0;
   background: transparent;
@@ -970,7 +980,8 @@ body {
 .coach-empty-state,
 .coach-form-shell,
 .coach-history-screen,
-.coach-metric-card {
+.coach-metric-card,
+.coach-goal-card {
   padding: 24px;
 }
 
@@ -1017,6 +1028,42 @@ body {
 
 .coach-metrics-grid > * {
   flex: 1 1 0;
+}
+
+.coach-goal-card {
+  display: grid;
+  gap: 18px;
+}
+
+.coach-goal-grid,
+.coach-detail-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.coach-goal-grid > * {
+  flex: 1 1 0;
+}
+
+.coach-goal-stat {
+  padding: 16px;
+  border-radius: 18px;
+  background: rgba(15, 23, 42, 0.04);
+}
+
+.coach-goal-stat span {
+  color: rgba(15, 23, 42, 0.62);
+}
+
+.coach-goal-stat strong {
+  display: block;
+  margin-top: 8px;
+  font-size: 28px;
+}
+
+.coach-goal-stat p {
+  margin: 8px 0 0;
+  color: rgba(15, 23, 42, 0.68);
 }
 
 .coach-metric-card strong {
@@ -1237,6 +1284,14 @@ body {
   line-height: 1.6;
 }
 
+.coach-detail-actions {
+  justify-content: flex-end;
+}
+
+.coach-confirm-copy {
+  margin-top: 14px;
+}
+
 @media (max-width: 860px) {
   .coach-header,
   .coach-header-actions,
@@ -1244,6 +1299,8 @@ body {
   .coach-section-head,
   .coach-dashboard-grid,
   .coach-metrics-grid,
+  .coach-goal-grid,
+  .coach-detail-actions,
   .coach-form-grid,
   .coach-history-metrics {
     flex-direction: column;

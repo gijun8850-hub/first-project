@@ -1,28 +1,37 @@
 import React from "react";
 import {
   buildCoachSummary,
+  buildGoalProgress,
   buildHistoryRows,
   buildMetricSnapshots,
   buildTrendPoints,
 } from "@/lib/body-composition/coach-engine";
 import { TrendChart } from "@/components/body-composition/trend-chart";
-import type { CheckInRecord } from "@/types/body-composition";
+import type { BodyCompositionGoal, CheckInRecord } from "@/types/body-composition";
 
 type DashboardScreenProps = {
   checkIns: CheckInRecord[];
+  goal?: BodyCompositionGoal | null;
   onAddCheckIn: () => void;
   onCloseCheckInDetail?: () => void;
+  onEditCheckIn?: (id: string) => void;
   onOpenCheckInDetail?: (id: string) => void;
+  onOpenGoalSettings?: () => void;
   onOpenHistory: () => void;
+  onRequestDeleteCheckIn?: (id: string) => void;
   selectedCheckInId?: string | null;
 };
 
 export function DashboardScreen({
   checkIns,
+  goal,
   onAddCheckIn,
   onCloseCheckInDetail,
+  onEditCheckIn,
   onOpenCheckInDetail,
+  onOpenGoalSettings,
   onOpenHistory,
+  onRequestDeleteCheckIn,
   selectedCheckInId,
 }: DashboardScreenProps) {
   if (checkIns.length === 0) {
@@ -52,6 +61,7 @@ export function DashboardScreen({
 
   const metricIds = ["weight", "skeletal-muscle", "body-fat"];
   const summary = buildCoachSummary(checkIns);
+  const goalProgress = buildGoalProgress(checkIns, goal ?? null);
   const historyRows = buildHistoryRows(checkIns);
   const metrics = buildMetricSnapshots(checkIns);
   const points = buildTrendPoints(checkIns);
@@ -83,6 +93,41 @@ export function DashboardScreen({
             <li key={item}>{item}</li>
           ))}
         </ul>
+      </div>
+
+      <div className="coach-panel coach-goal-card" data-goal-summary="true">
+        <div className="coach-summary-head">
+          <span className="coach-section-label">목표 진행</span>
+          <button
+            className="coach-secondary-button"
+            onClick={onOpenGoalSettings}
+            type="button"
+          >
+            목표 설정
+          </button>
+        </div>
+
+        {goalProgress ? (
+          <>
+            <div className="coach-goal-grid">
+              <div className="coach-goal-stat">
+                <span>목표 체중</span>
+                <strong>{goalProgress.targetWeightText}</strong>
+                <p>{goalProgress.remainingWeightText}</p>
+              </div>
+              <div className="coach-goal-stat">
+                <span>목표 체지방률</span>
+                <strong>{goalProgress.targetBodyFatText}</strong>
+                <p>{goalProgress.remainingBodyFatText}</p>
+              </div>
+            </div>
+            <p className="coach-summary-copy">{goalProgress.summary}</p>
+          </>
+        ) : (
+          <p className="coach-summary-copy">
+            목표를 저장하면 현재 숫자와 남은 차이를 같이 보여줍니다.
+          </p>
+        )}
       </div>
 
       <div className="coach-metrics-grid">
@@ -183,6 +228,25 @@ export function DashboardScreen({
               <div className="coach-detail-note">
                 <span className="coach-section-label">메모</span>
                 <p>{selectedRow.note || "저장된 메모가 없습니다."}</p>
+              </div>
+
+              <div className="coach-detail-actions">
+                <button
+                  className="coach-secondary-button"
+                  data-action="edit-check-in"
+                  onClick={() => onEditCheckIn?.(selectedRow.id)}
+                  type="button"
+                >
+                  수정
+                </button>
+                <button
+                  className="coach-danger-button"
+                  data-action="delete-check-in"
+                  onClick={() => onRequestDeleteCheckIn?.(selectedRow.id)}
+                  type="button"
+                >
+                  삭제
+                </button>
               </div>
             </section>
           </article>

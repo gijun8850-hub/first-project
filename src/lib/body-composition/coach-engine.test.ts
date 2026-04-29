@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   buildCoachSummary,
+  buildGoalProgress,
   buildHistoryRows,
   buildMetricSnapshots,
   buildTrendPoints,
@@ -120,4 +121,16 @@ test("buildHistoryRows keeps the newest entry first with a baseline fallback", (
   assert.equal(rows[0].measuredAtLabel, "2026.04.27");
   assert.match(rows[0].deltaSummary, /체지방/);
   assert.match(rows.at(-1)?.deltaSummary ?? "", /기준선/);
+});
+
+test("buildGoalProgress computes the remaining gap to the current goal", () => {
+  const progress = buildGoalProgress(onTrackCheckIns, {
+    targetWeightKg: 73,
+    targetBodyFatPercent: 15,
+  });
+
+  assert.equal(progress?.targetWeightText, "73.0kg");
+  assert.equal(progress?.targetBodyFatText, "15.0%");
+  assert.match(progress?.remainingWeightText ?? "", /1.8kg/);
+  assert.match(progress?.remainingBodyFatText ?? "", /1.4%p/);
 });

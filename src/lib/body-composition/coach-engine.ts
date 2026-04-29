@@ -1,6 +1,8 @@
 import type {
+  BodyCompositionGoal,
   CheckInRecord,
   CoachSummary,
+  GoalProgress,
   HistoryRow,
   MetricSnapshot,
   TrendPoint,
@@ -29,6 +31,18 @@ function formatLongDate(measuredAt: string) {
 function formatSigned(value: number, suffix: string) {
   const sign = value > 0 ? "+" : "";
   return `${sign}${value.toFixed(1)}${suffix}`;
+}
+
+function formatRemaining(value: number, suffix: string) {
+  if (Math.abs(value) < 0.05) {
+    return "목표 달성";
+  }
+
+  if (value > 0) {
+    return `${value.toFixed(1)}${suffix} 남음`;
+  }
+
+  return `${Math.abs(value).toFixed(1)}${suffix} 초과 달성`;
 }
 
 function buildDelta(current: CheckInRecord, previous: CheckInRecord) {
@@ -169,6 +183,40 @@ export function buildTrendPoints(checkIns: CheckInRecord[]): TrendPoint[] {
       skeletalMuscleKg: checkIn.skeletalMuscleKg,
       bodyFatPercent: checkIn.bodyFatPercent,
     }));
+}
+
+export function buildGoalProgress(
+  checkIns: CheckInRecord[],
+  goal: BodyCompositionGoal | null,
+): GoalProgress | null {
+  if (!goal) {
+    return null;
+  }
+
+  const latest = sortNewestFirst(checkIns)[0];
+  const targetWeightText = `${goal.targetWeightKg.toFixed(1)}kg`;
+  const targetBodyFatText = `${goal.targetBodyFatPercent.toFixed(1)}%`;
+
+  if (!latest) {
+    return {
+      targetWeightText,
+      targetBodyFatText,
+      remainingWeightText: "첫 체크인 후 계산",
+      remainingBodyFatText: "첫 체크인 후 계산",
+      summary: "목표는 저장되었고 첫 체크인부터 남은 차이를 계산합니다.",
+    };
+  }
+
+  const weightGap = latest.weightKg - goal.targetWeightKg;
+  const bodyFatGap = latest.bodyFatPercent - goal.targetBodyFatPercent;
+
+  return {
+    targetWeightText,
+    targetBodyFatText,
+    remainingWeightText: formatRemaining(weightGap, "kg"),
+    remainingBodyFatText: formatRemaining(bodyFatGap, "%p"),
+    summary: `체중 ${formatRemaining(weightGap, "kg")} · 체지방률 ${formatRemaining(bodyFatGap, "%p")}`,
+  };
 }
 
 export function buildHistoryRows(checkIns: CheckInRecord[]): HistoryRow[] {

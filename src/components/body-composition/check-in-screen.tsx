@@ -4,6 +4,7 @@ import type { CheckInDraft } from "@/types/body-composition";
 type CheckInScreenProps = {
   draft: CheckInDraft;
   errors: string[];
+  isEditing?: boolean;
   showSuspiciousWarning: boolean;
   onBack: () => void;
   onChange: (field: keyof CheckInDraft, value: string) => void;
@@ -13,6 +14,7 @@ type CheckInScreenProps = {
 export function CheckInScreen({
   draft,
   errors,
+  isEditing,
   showSuspiciousWarning,
   onBack,
   onChange,
@@ -23,7 +25,7 @@ export function CheckInScreen({
       <div className="coach-section-head">
         <div>
           <span className="coach-section-label">주간 체크인</span>
-          <h1>이번 주 체성분을 입력하세요.</h1>
+          <h1>{isEditing ? "체크인을 수정하세요." : "이번 주 체성분을 입력하세요."}</h1>
         </div>
 
         <button className="coach-secondary-button" onClick={onBack} type="button">
@@ -99,7 +101,7 @@ export function CheckInScreen({
 
       <div className="coach-form-actions">
         <button className="coach-primary-button" onClick={onSave} type="button">
-          체크인 저장
+          {isEditing ? "수정 저장" : "체크인 저장"}
         </button>
       </div>
     </section>

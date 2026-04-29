@@ -5,9 +5,14 @@ import type { CheckInRecord } from "@/types/body-composition";
 type HistoryScreenProps = {
   checkIns: CheckInRecord[];
   onBack: () => void;
+  onSelectCheckIn?: (id: string) => void;
 };
 
-export function HistoryScreen({ checkIns, onBack }: HistoryScreenProps) {
+export function HistoryScreen({
+  checkIns,
+  onBack,
+  onSelectCheckIn,
+}: HistoryScreenProps) {
   const rows = buildHistoryRows(checkIns);
 
   return (
@@ -29,16 +34,23 @@ export function HistoryScreen({ checkIns, onBack }: HistoryScreenProps) {
         <ul className="coach-history-list" data-history-list="true">
           {rows.map((row) => (
             <li className="coach-history-card" data-history-row={row.id} key={row.id}>
-              <div className="coach-history-card-head">
-                <strong>{row.measuredAtLabel}</strong>
-                <span>{row.deltaSummary}</span>
-              </div>
-              <div className="coach-history-metrics">
-                <span>{row.weightText}</span>
-                <span>{row.skeletalMuscleText}</span>
-                <span>{row.bodyFatText}</span>
-              </div>
-              {row.note ? <p>{row.note}</p> : null}
+              <button
+                className="coach-history-trigger"
+                data-history-trigger={row.id}
+                onClick={() => onSelectCheckIn?.(row.id)}
+                type="button"
+              >
+                <div className="coach-history-card-head">
+                  <strong>{row.measuredAtLabel}</strong>
+                  <span>{row.deltaSummary}</span>
+                </div>
+                <div className="coach-history-metrics">
+                  <span>{row.weightText}</span>
+                  <span>{row.skeletalMuscleText}</span>
+                  <span>{row.bodyFatText}</span>
+                </div>
+                {row.note ? <p>{row.note}</p> : null}
+              </button>
             </li>
           ))}
         </ul>
