@@ -74,6 +74,52 @@ test("DashboardScreen renders a home starter state with a primary action", () =>
   assert.match(html, /data-action="open-check-in"/);
 });
 
+test("BodyCompositionApp renders a single device shell with bottom tabs and a free ad rail", () => {
+  const html = renderToStaticMarkup(<BodyCompositionApp />);
+
+  assert.match(html, /data-app-shell="true"/);
+  assert.match(html, /data-home-bezel="true"/);
+  assert.match(html, /data-bottom-tabs="true"/);
+  assert.match(html, /data-ad-rail="free"/);
+  assert.doesNotMatch(html, /data-screen-nav="true"/);
+});
+
+test("DashboardScreen renders focused home and coach panels without the old card grid", () => {
+  const homeHtml = renderToStaticMarkup(
+    <DashboardScreen
+      checkIns={checkIns}
+      currentView="home"
+      goal={{ targetWeightKg: 73, targetBodyFatPercent: 15 }}
+      plan="free"
+      onAddCheckIn={() => {}}
+      onChangeView={() => {}}
+      onOpenGoalSettings={() => {}}
+      onOpenHistory={() => {}}
+      onRequestPremiumPreview={() => {}}
+    />,
+  );
+
+  assert.match(homeHtml, /data-home-primary="true"/);
+  assert.doesNotMatch(homeHtml, /data-home-card-grid/);
+
+  const coachHtml = renderToStaticMarkup(
+    <DashboardScreen
+      checkIns={checkIns}
+      currentView="coach"
+      goal={{ targetWeightKg: 73, targetBodyFatPercent: 15 }}
+      plan="free"
+      onAddCheckIn={() => {}}
+      onChangeView={() => {}}
+      onOpenGoalSettings={() => {}}
+      onOpenHistory={() => {}}
+      onRequestPremiumPreview={() => {}}
+    />,
+  );
+
+  assert.match(coachHtml, /data-coach-primary="true"/);
+  assert.match(coachHtml, /data-premium-lock="coach-deep-dive"/);
+});
+
 test("DashboardScreen renders a home view with list navigation and streak summary", () => {
   const html = renderToStaticMarkup(
     <DashboardScreen

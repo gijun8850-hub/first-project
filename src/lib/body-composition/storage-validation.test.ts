@@ -130,6 +130,25 @@ test("readBodyCompositionStateFromStorage returns goal data from object payloads
   assert.equal(state.goal?.targetBodyFatPercent, 15);
 });
 
+test("readBodyCompositionStateFromStorage returns premium plan data from object payloads", () => {
+  const storage = {
+    getItem() {
+      return JSON.stringify({
+        checkIns: [],
+        goal: {
+          targetWeightKg: 73,
+          targetBodyFatPercent: 15,
+        },
+        plan: "premium",
+      });
+    },
+    setItem() {},
+  };
+
+  const state = readBodyCompositionStateFromStorage(storage);
+  assert.equal(state.plan, "premium");
+});
+
 test("writeBodyCompositionStateToStorage serializes goal alongside check-ins", () => {
   let savedValue = "";
 
