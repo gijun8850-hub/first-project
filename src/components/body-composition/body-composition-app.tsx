@@ -4,17 +4,15 @@ import React, { useEffect, useState } from "react";
 import { CheckInScreen } from "@/components/body-composition/check-in-screen";
 import { DashboardScreen } from "@/components/body-composition/dashboard-screen";
 import { GoalScreen } from "@/components/body-composition/goal-screen";
-import { HistoryScreen } from "@/components/body-composition/history-screen";
-import { LandingScreen } from "@/components/body-composition/landing-screen";
-import {
-  readBodyCompositionStateFromStorage,
-  writeBodyCompositionStateToStorage,
-} from "@/lib/body-composition/storage";
 import {
   createDraftFromRecord,
   removeCheckIn,
   upsertCheckIn,
 } from "@/lib/body-composition/check-in-state";
+import {
+  readBodyCompositionStateFromStorage,
+  writeBodyCompositionStateToStorage,
+} from "@/lib/body-composition/storage";
 import {
   isSuspiciousCheckIn,
   validateCheckInDraft,
@@ -22,13 +20,13 @@ import {
 } from "@/lib/body-composition/validation";
 import type {
   BodyCompositionGoal,
+  BodyCompositionRoute,
   CheckInDraft,
   CheckInRecord,
   GoalDraft,
 } from "@/types/body-composition";
 
-type Screen = "landing" | "dashboard";
-type ModalView = "check-in" | "history" | "goal" | null;
+type ModalView = "check-in" | "goal" | null;
 
 function createEmptyDraft(): CheckInDraft {
   return {
@@ -59,8 +57,21 @@ function getSuggestedHeight(checkIns: CheckInRecord[]) {
     : String(latestWithHeight.heightCm);
 }
 
+function getRouteLabel(route: BodyCompositionRoute) {
+  switch (route) {
+    case "home":
+      return "홈";
+    case "progress":
+      return "진행";
+    case "history":
+      return "기록";
+    case "coach":
+      return "코치";
+  }
+}
+
 export function BodyCompositionApp() {
-  const [screen, setScreen] = useState<Screen>("landing");
+  const [route, setRoute] = useState<BodyCompositionRoute>("home");
   const [modalView, setModalView] = useState<ModalView>(null);
   const [checkIns, setCheckIns] = useState<CheckInRecord[]>([]);
   const [goal, setGoal] = useState<BodyCompositionGoal | null>(null);
@@ -108,18 +119,12 @@ export function BodyCompositionApp() {
     setSelectedCheckInId(null);
   }
 
-  function goLandingHome() {
+  function changeRoute(nextRoute: BodyCompositionRoute) {
     resetOverlayState();
-    setScreen("landing");
-  }
-
-  function goDashboard() {
-    resetOverlayState();
-    setScreen("dashboard");
+    setRoute(nextRoute);
   }
 
   function openCheckIn() {
-    setScreen("dashboard");
     setModalView("check-in");
     setErrors([]);
     setConfirmSuspiciousSave(false);
@@ -140,7 +145,6 @@ export function BodyCompositionApp() {
       return;
     }
 
-    setScreen("dashboard");
     setModalView("check-in");
     setErrors([]);
     setConfirmSuspiciousSave(false);
@@ -151,14 +155,10 @@ export function BodyCompositionApp() {
   }
 
   function openHistory() {
-    setScreen("dashboard");
-    setModalView("history");
-    setPendingDeleteCheckInId(null);
-    setSelectedCheckInId(null);
+    changeRoute("history");
   }
 
   function openGoalSettings() {
-    setScreen("dashboard");
     setModalView("goal");
     setGoalErrors([]);
     setPendingDeleteCheckInId(null);
@@ -180,11 +180,9 @@ export function BodyCompositionApp() {
     setConfirmSuspiciousSave(false);
     setEditingCheckInId(null);
     setPendingDeleteCheckInId(null);
-    setSelectedCheckInId(null);
   }
 
   function openCheckInDetail(id: string) {
-    setScreen("dashboard");
     setSelectedCheckInId(id);
   }
 
@@ -230,7 +228,6 @@ export function BodyCompositionApp() {
     setEditingCheckInId(null);
     setSelectedCheckInId(null);
     setModalView(null);
-    setScreen("dashboard");
   }
 
   function handleGoalSave() {
@@ -247,7 +244,6 @@ export function BodyCompositionApp() {
     });
     setGoalErrors([]);
     setModalView(null);
-    setScreen("dashboard");
   }
 
   function handleClearGoal() {
@@ -255,7 +251,6 @@ export function BodyCompositionApp() {
     setGoalDraft(createEmptyGoalDraft());
     setGoalErrors([]);
     setModalView(null);
-    setScreen("dashboard");
   }
 
   function requestDeleteCheckIn(id: string) {
@@ -271,8 +266,6 @@ export function BodyCompositionApp() {
     setPendingDeleteCheckInId(null);
     setSelectedCheckInId(null);
     setEditingCheckInId(null);
-    setModalView(null);
-    setScreen("dashboard");
   }
 
   const deleteTarget = pendingDeleteCheckInId
@@ -281,65 +274,49 @@ export function BodyCompositionApp() {
 
   return (
     <main className="coach-shell">
-      {screen === "landing" ? (
-        <LandingScreen onEnterDashboard={goDashboard} />
-      ) : (
-        <>
-          <header className="coach-header" data-screen="dashboard">
-            <div>
-              <div className="coach-header-nav">
-                <button
-                  className="coach-nav-button"
-                  data-action="go-home"
-                  onClick={goLandingHome}
-                  type="button"
-                >
-                  홈
-                </button>
-                <button
-                  className="coach-nav-button coach-nav-button-active"
-                  data-action="go-dashboard"
-                  onClick={goDashboard}
-                  type="button"
-                >
-                  대시보드
-                </button>
-              </div>
-              <strong>이번 주 숫자를 다음 행동으로 바꾸기</strong>
-            </div>
+      <header className="coach-header" data-screen={route}>
+        <div>
+          <span className="coach-section-label">주간체크</span>
+          <strong>{getRouteLabel(route)}</strong>
+        </div>
 
-            <div className="coach-header-actions">
-              <button
-                className="coach-secondary-button"
-                data-action="open-goal-settings"
-                onClick={openGoalSettings}
-                type="button"
-              >
-                목표 설정
-              </button>
-              <button className="coach-secondary-button" onClick={openHistory} type="button">
-                기록 보기
-              </button>
-              <button className="coach-primary-button" onClick={openCheckIn} type="button">
-                체크인 추가
-              </button>
-            </div>
-          </header>
+        <div className="coach-header-actions">
+          <button
+            className="coach-secondary-button"
+            data-action="go-home"
+            onClick={() => changeRoute("home")}
+            type="button"
+          >
+            홈
+          </button>
+          <button
+            className="coach-secondary-button"
+            data-action="open-goal-settings"
+            onClick={openGoalSettings}
+            type="button"
+          >
+            목표 설정
+          </button>
+          <button className="coach-primary-button" onClick={openCheckIn} type="button">
+            체크인 추가
+          </button>
+        </div>
+      </header>
 
-          <DashboardScreen
-            checkIns={checkIns}
-            goal={goal}
-            onAddCheckIn={openCheckIn}
-            onCloseCheckInDetail={() => setSelectedCheckInId(null)}
-            onEditCheckIn={openEditCheckIn}
-            onOpenCheckInDetail={openCheckInDetail}
-            onOpenGoalSettings={openGoalSettings}
-            onOpenHistory={openHistory}
-            onRequestDeleteCheckIn={requestDeleteCheckIn}
-            selectedCheckInId={selectedCheckInId}
-          />
-        </>
-      )}
+      <DashboardScreen
+        checkIns={checkIns}
+        currentView={route}
+        goal={goal}
+        onAddCheckIn={openCheckIn}
+        onChangeView={changeRoute}
+        onCloseCheckInDetail={() => setSelectedCheckInId(null)}
+        onEditCheckIn={openEditCheckIn}
+        onOpenCheckInDetail={openCheckInDetail}
+        onOpenGoalSettings={openGoalSettings}
+        onOpenHistory={openHistory}
+        onRequestDeleteCheckIn={requestDeleteCheckIn}
+        selectedCheckInId={selectedCheckInId}
+      />
 
       {modalView === "check-in" ? (
         <div className="coach-modal-backdrop" onClick={closeOverlay}>
@@ -382,25 +359,6 @@ export function BodyCompositionApp() {
               onChange={handleGoalChange}
               onClear={handleClearGoal}
               onSave={handleGoalSave}
-            />
-          </div>
-        </div>
-      ) : null}
-
-      {modalView === "history" ? (
-        <div className="coach-modal-backdrop" onClick={closeOverlay}>
-          <div
-            aria-label="check-in history"
-            aria-modal="true"
-            className="coach-modal-window"
-            data-modal-view="history"
-            onClick={(event) => event.stopPropagation()}
-            role="dialog"
-          >
-            <HistoryScreen
-              checkIns={checkIns}
-              onBack={closeOverlay}
-              onSelectCheckIn={openCheckInDetail}
             />
           </div>
         </div>

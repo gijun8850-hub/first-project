@@ -27,6 +27,8 @@ export type GoalDraft = {
   targetBodyFatPercent: string;
 };
 
+export type BodyCompositionRoute = "home" | "progress" | "history" | "coach";
+
 export type CoachStatus =
   | "baseline"
   | "on-track"
