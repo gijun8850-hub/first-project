@@ -256,20 +256,20 @@ test("GoalScreen renders goal form fields and action buttons", () => {
   assert.match(html, /data-goal-form="true"/);
   assert.match(html, /name="targetWeightKg"/);
   assert.match(html, /name="targetBodyFatPercent"/);
-  assert.match(html, /목표 삭제/);
+  assert.match(html, /coach-form-actions/);
 });
 
 test("LandingScreen renders a compact home hierarchy", () => {
   const html = renderToStaticMarkup(
     <LandingScreen
-      currentStatusLabel="감량 진행 중"
-      currentStatusSummary="짧은 상태 요약"
-      goalSummary="체중 1.8kg 남음"
-      latestMeasuredAtText="최근 측정 2026.04.27"
-      progressSummary="3주 연속 체크인 중"
-      streakLabel="3주 연속"
-      weeklyStatusDetail="이번 주는 유지를 우선합니다."
-      weeklyStatusLabel="이번 주 체크인 완료"
+      currentStatusLabel="Cutting in progress"
+      currentStatusSummary="Status summary"
+      goalSummary="1.8kg to goal"
+      latestMeasuredAtText="Latest check-in 2026.04.27"
+      progressSummary="3 week streak active"
+      streakLabel="3 week streak"
+      weeklyStatusDetail="This week is staying on plan."
+      weeklyStatusLabel="This week check-in complete"
       onAddCheckIn={() => {}}
       onChangeView={() => {}}
     />,
@@ -279,15 +279,14 @@ test("LandingScreen renders a compact home hierarchy", () => {
   assert.match(html, /data-home-actions="compact"/);
 });
 
-test("BodyCompositionApp renders a home navigator on first load", () => {
+test("BodyCompositionApp renders the simplified shell home state on first load", () => {
   const html = renderToStaticMarkup(<BodyCompositionApp />);
 
+  assert.match(html, /data-app-shell="true"/);
   assert.match(html, /data-home-bezel="true"/);
-  assert.match(html, /data-screen="home"/);
-  assert.match(html, /data-home-nav="true"/);
-  assert.match(html, /data-nav-target="progress"/);
-  assert.match(html, /data-nav-target="history"/);
-  assert.match(html, /data-nav-target="coach"/);
-  assert.match(html, /주간체크/);
+  assert.match(html, /data-bottom-tabs="true"/);
+  assert.match(html, /data-ad-rail="free"/);
+  assert.doesNotMatch(html, /data-screen-nav="true"/);
+  assert.match(html, /二쇨컙泥댄겕/);
   assert.match(html, /data-action="open-check-in"/);
 });

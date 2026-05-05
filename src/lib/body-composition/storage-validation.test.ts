@@ -177,11 +177,13 @@ test("writeBodyCompositionStateToStorage serializes goal alongside check-ins", (
       targetWeightKg: 73,
       targetBodyFatPercent: 15,
     },
+    plan: "premium",
   });
 
   assert.match(savedValue, /targetWeightKg/);
   assert.match(savedValue, /73/);
   assert.match(savedValue, /heightCm/);
+  assert.match(savedValue, /"plan":"premium"/);
 });
 
 test("validateCheckInDraft requires date and all numeric fields", () => {
