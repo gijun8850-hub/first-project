@@ -7,6 +7,7 @@ import { CheckInScreen } from "@/components/body-composition/check-in-screen";
 import { DashboardScreen } from "@/components/body-composition/dashboard-screen";
 import { GoalScreen } from "@/components/body-composition/goal-screen";
 import { HistoryScreen } from "@/components/body-composition/history-screen";
+import { LandingScreen } from "@/components/body-composition/landing-screen";
 import type {
   CheckInDraft,
   CheckInRecord,
@@ -212,9 +213,30 @@ test("GoalScreen renders goal form fields and action buttons", () => {
   assert.match(html, /목표 삭제/);
 });
 
+test("LandingScreen renders a compact home hierarchy", () => {
+  const html = renderToStaticMarkup(
+    <LandingScreen
+      currentStatusLabel="감량 진행 중"
+      currentStatusSummary="짧은 상태 요약"
+      goalSummary="체중 1.8kg 남음"
+      latestMeasuredAtText="최근 측정 2026.04.27"
+      progressSummary="3주 연속 체크인 중"
+      streakLabel="3주 연속"
+      weeklyStatusDetail="이번 주는 유지를 우선합니다."
+      weeklyStatusLabel="이번 주 체크인 완료"
+      onAddCheckIn={() => {}}
+      onChangeView={() => {}}
+    />,
+  );
+
+  assert.match(html, /data-home-layout="compact"/);
+  assert.match(html, /data-home-actions="compact"/);
+});
+
 test("BodyCompositionApp renders a home navigator on first load", () => {
   const html = renderToStaticMarkup(<BodyCompositionApp />);
 
+  assert.match(html, /data-home-bezel="true"/);
   assert.match(html, /data-screen="home"/);
   assert.match(html, /data-home-nav="true"/);
   assert.match(html, /data-nav-target="progress"/);

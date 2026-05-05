@@ -274,21 +274,25 @@ export function BodyCompositionApp() {
 
   return (
     <main className="coach-shell">
-      <header className="coach-header" data-screen={route}>
-        <div>
-          <span className="coach-section-label">주간체크</span>
+      <div className="coach-top-bezel">
+        <button
+          className="coach-bezel-button"
+          data-action="go-home"
+          data-home-bezel="true"
+          onClick={() => changeRoute("home")}
+          type="button"
+        >
+          주간체크
+        </button>
+      </div>
+
+      <header className="coach-header coach-header-compact" data-screen={route}>
+        <div className="coach-header-copy">
+          <span className="coach-section-label">현재 화면</span>
           <strong>{getRouteLabel(route)}</strong>
         </div>
 
         <div className="coach-header-actions">
-          <button
-            className="coach-secondary-button"
-            data-action="go-home"
-            onClick={() => changeRoute("home")}
-            type="button"
-          >
-            홈
-          </button>
           <button
             className="coach-secondary-button"
             data-action="open-goal-settings"

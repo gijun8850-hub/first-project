@@ -866,9 +866,9 @@ body {
 }
 
 .coach-shell {
-  width: min(1180px, calc(100% - 32px));
+  width: min(1120px, calc(100% - 28px));
   margin: 0 auto;
-  padding: 28px 0 48px;
+  padding: 18px 0 40px;
 }
 
 .coach-header,
@@ -895,14 +895,44 @@ body {
 }
 
 .coach-header {
-  margin-bottom: 22px;
+  margin-bottom: 14px;
 }
 
 .coach-header strong {
   display: block;
-  margin-top: 8px;
-  font-size: clamp(32px, 5vw, 52px);
-  letter-spacing: -0.05em;
+  margin-top: 6px;
+  font-size: clamp(20px, 3vw, 28px);
+  letter-spacing: -0.04em;
+}
+
+.coach-header-copy {
+  display: grid;
+  gap: 2px;
+}
+
+.coach-header-compact {
+  align-items: flex-end;
+}
+
+.coach-top-bezel {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.coach-bezel-button {
+  min-height: 42px;
+  padding: 0 18px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--coach-ink);
+  cursor: pointer;
+  font:
+    800 14px/1 "Bahnschrift", "DIN Alternate", "Noto Sans KR", sans-serif;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  box-shadow: var(--coach-shadow);
 }
 
 .coach-header-nav {
@@ -913,8 +943,8 @@ body {
 
 .coach-screen-layout {
   display: grid;
-  grid-template-columns: minmax(250px, 290px) minmax(0, 1fr);
-  gap: 18px;
+  grid-template-columns: minmax(220px, 248px) minmax(0, 1fr);
+  gap: 14px;
   align-items: start;
 }
 
@@ -927,31 +957,32 @@ body {
 
 .coach-screen-nav {
   display: grid;
-  gap: 12px;
+  gap: 10px;
 }
 
 .coach-screen-nav-item {
   display: grid;
-  gap: 6px;
+  gap: 4px;
   width: 100%;
-  padding: 18px 20px;
-  border: 1px solid rgba(15, 23, 42, 0.08);
-  border-radius: 22px;
+  padding: 14px 16px;
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  border-radius: 18px;
   background: rgba(255, 255, 255, 0.84);
   color: var(--coach-ink);
   text-align: left;
   cursor: pointer;
-  box-shadow: var(--coach-shadow);
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.08);
 }
 
 .coach-screen-nav-item strong {
-  font-size: 22px;
+  font-size: 18px;
   letter-spacing: -0.03em;
 }
 
 .coach-screen-nav-item span {
+  font-size: 13px;
   color: rgba(15, 23, 42, 0.64);
-  line-height: 1.5;
+  line-height: 1.35;
 }
 
 .coach-screen-nav-item-active {
@@ -1009,20 +1040,22 @@ body {
 }
 
 .coach-primary-button {
-  min-height: 52px;
-  padding: 0 18px;
-  border-radius: 16px;
+  min-height: 46px;
+  padding: 0 16px;
+  border-radius: 14px;
   background: linear-gradient(180deg, #3b82f6 0%, #2563eb 100%);
   color: white;
+  font-size: 14px;
   font-weight: 800;
 }
 
 .coach-secondary-button {
-  min-height: 48px;
-  padding: 0 16px;
-  border-radius: 16px;
+  min-height: 42px;
+  padding: 0 14px;
+  border-radius: 14px;
   background: rgba(37, 99, 235, 0.08);
   color: var(--coach-ink);
+  font-size: 14px;
   font-weight: 700;
 }
 
@@ -1150,32 +1183,33 @@ body {
 .coach-home-mini-card,
 .coach-home-hero,
 .coach-screen-content-block {
-  padding: 24px;
+  padding: 20px;
 }
 
 .coach-home-summary h1 {
-  margin: 14px 0 10px;
-  font-size: clamp(30px, 4vw, 46px);
+  margin: 10px 0 8px;
+  font-size: clamp(24px, 3vw, 34px);
   letter-spacing: -0.05em;
+  line-height: 1.08;
 }
 
 .coach-home-hero {
   display: grid;
   grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
-  gap: 16px;
+  gap: 12px;
 }
 
 .coach-home-streak-block,
 .coach-home-status-block {
   display: grid;
-  gap: 10px;
-  padding: 20px;
-  border-radius: 22px;
+  gap: 8px;
+  padding: 18px;
+  border-radius: 18px;
   background: rgba(15, 23, 42, 0.04);
 }
 
 .coach-home-streak {
-  font-size: clamp(40px, 7vw, 68px);
+  font-size: clamp(34px, 5vw, 54px);
   letter-spacing: -0.07em;
   line-height: 0.94;
 }
@@ -1195,29 +1229,31 @@ body {
 
 .coach-home-status-block strong,
 .coach-home-mini-card strong {
-  font-size: clamp(24px, 3vw, 34px);
+  font-size: clamp(20px, 2.5vw, 26px);
   letter-spacing: -0.03em;
 }
 
+.coach-summary-copy,
 .coach-home-status-block p,
 .coach-home-status-block small,
 .coach-home-mini-card p,
 .coach-home-streak-block p {
   margin: 0;
+  font-size: 15px;
   color: rgba(15, 23, 42, 0.68);
-  line-height: 1.6;
+  line-height: 1.5;
 }
 
 .coach-home-quick-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 10px;
 }
 
 .coach-home-card-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 18px;
+  gap: 14px;
 }
 
 .coach-landing-topbar,
@@ -1356,31 +1392,32 @@ body {
 .coach-history-screen,
 .coach-metric-card,
 .coach-goal-card {
-  padding: 24px;
+  padding: 20px;
 }
 
 .coach-summary-card h1,
 .coach-empty-state h1,
 .coach-form-shell h1,
 .coach-history-screen h1 {
-  margin: 14px 0 10px;
-  font-size: clamp(28px, 4vw, 42px);
+  margin: 10px 0 8px;
+  font-size: clamp(24px, 3vw, 34px);
   letter-spacing: -0.04em;
 }
 
 .coach-summary-copy,
 .coach-empty-state p {
   margin: 0;
-  line-height: 1.7;
+  font-size: 15px;
+  line-height: 1.55;
   color: rgba(15, 23, 42, 0.74);
 }
 
 .coach-current-status {
   display: grid;
-  gap: 12px;
-  margin: 18px 0 22px;
-  padding: 18px 20px;
-  border-radius: 20px;
+  gap: 10px;
+  margin: 14px 0 18px;
+  padding: 16px 18px;
+  border-radius: 18px;
   border: 1px solid rgba(15, 23, 42, 0.08);
 }
 
@@ -1415,7 +1452,7 @@ body {
 }
 
 .coach-current-status strong {
-  font-size: clamp(22px, 3vw, 28px);
+  font-size: clamp(18px, 2.6vw, 24px);
   letter-spacing: -0.03em;
 }
 
@@ -1435,13 +1472,14 @@ body {
 
 .coach-action-list {
   display: grid;
-  gap: 10px;
-  margin-top: 18px;
+  gap: 8px;
+  margin-top: 14px;
 }
 
 .coach-action-list li {
-  padding: 12px 14px;
-  border-radius: 16px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  font-size: 14px;
   background: rgba(15, 23, 42, 0.04);
 }
 
@@ -1483,7 +1521,7 @@ body {
 .coach-goal-stat strong {
   display: block;
   margin-top: 8px;
-  font-size: 28px;
+  font-size: 24px;
 }
 
 .coach-goal-stat p {
@@ -1494,7 +1532,7 @@ body {
 .coach-metric-card strong {
   display: block;
   margin-top: 10px;
-  font-size: 30px;
+  font-size: 24px;
 }
 
 .coach-metric-card p,
@@ -1510,7 +1548,7 @@ body {
 }
 
 .coach-dashboard-grid > * {
-  padding: 22px;
+  padding: 20px;
 }
 
 .coach-trend-chart {

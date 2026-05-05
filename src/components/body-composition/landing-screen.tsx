@@ -28,16 +28,20 @@ export function LandingScreen({
   onChangeView,
 }: LandingScreenProps) {
   return (
-    <section className="coach-screen-layout" data-screen="home" data-screen-panel="home">
+    <section
+      className="coach-screen-layout coach-screen-layout-home"
+      data-home-layout="compact"
+      data-screen="home"
+      data-screen-panel="home"
+    >
       <ScreenNavigation currentView="home" onChangeView={onChangeView} />
 
       <div className="coach-screen-content coach-home-stack">
         <section className="coach-panel coach-home-summary" data-home-summary="true">
           <span className="coach-section-label">주간체크</span>
-          <h1>한 주 단위로 기록하고, 화면을 나눠서 확실하게 봅니다.</h1>
+          <h1>이번 주 흐름만 먼저 보고, 나머지는 화면별로 나눠서 봅니다.</h1>
           <p className="coach-summary-copy">
-            홈에서는 이번 주 체크인 흐름만 먼저 보고, 나머지는 진행 · 기록 · 코치
-            화면으로 나눠서 확인합니다.
+            홈은 빠르게 확인하는 화면이고, 진행 · 기록 · 코치에서 각각 자세히 봅니다.
           </p>
         </section>
 
@@ -58,7 +62,11 @@ export function LandingScreen({
           </div>
         </section>
 
-        <section className="coach-home-quick-actions" data-home-quick-actions="true">
+        <section
+          className="coach-home-quick-actions"
+          data-home-actions="compact"
+          data-home-quick-actions="true"
+        >
           <button
             className="coach-primary-button"
             data-action="open-check-in"
@@ -72,14 +80,7 @@ export function LandingScreen({
             onClick={() => onChangeView("coach")}
             type="button"
           >
-            이번 주 코치 보기
-          </button>
-          <button
-            className="coach-secondary-button"
-            onClick={() => onChangeView("progress")}
-            type="button"
-          >
-            변화 그래프 보기
+            이번 주 코치
           </button>
         </section>
 
@@ -87,13 +88,13 @@ export function LandingScreen({
           <article className="coach-panel coach-home-mini-card">
             <span className="coach-section-label">이번 주 진행</span>
             <strong>{progressSummary}</strong>
-            <p>이번 주 해야 할 흐름을 한 줄로 다시 확인합니다.</p>
+            <p>이번 주 유지할 흐름을 한 줄로 다시 확인합니다.</p>
           </article>
 
           <article className="coach-panel coach-home-mini-card">
             <span className="coach-section-label">목표 요약</span>
             <strong>{goalSummary ?? "목표를 아직 설정하지 않았습니다."}</strong>
-            <p>목표 설정을 열면 현재 수치와 남은 차이를 바로 볼 수 있습니다.</p>
+            <p>목표 화면에서 현재 수치와 남은 차이를 바로 볼 수 있습니다.</p>
           </article>
         </section>
       </div>

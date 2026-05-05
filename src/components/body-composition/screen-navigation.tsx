@@ -14,22 +14,22 @@ const NAV_ITEMS: Array<{
   {
     view: "home",
     label: "홈",
-    description: "연속 체크인과 현재 상태를 먼저 봅니다.",
+    description: "연속 체크인과 상태",
   },
   {
     view: "progress",
     label: "진행",
-    description: "그래프와 목표 대비 변화를 확인합니다.",
+    description: "그래프와 목표 변화",
   },
   {
     view: "history",
     label: "기록",
-    description: "체크인 기록을 하나씩 보고 수정합니다.",
+    description: "체크인 목록과 수정",
   },
   {
     view: "coach",
     label: "코치",
-    description: "이번 주 해석과 액션을 따로 봅니다.",
+    description: "이번 주 해석과 액션",
   },
 ];
 
