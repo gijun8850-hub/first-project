@@ -1,9 +1,12 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { AdRail } from "@/components/body-composition/ad-rail";
+import { BottomTabBar } from "@/components/body-composition/bottom-tab-bar";
 import { CheckInScreen } from "@/components/body-composition/check-in-screen";
 import { DashboardScreen } from "@/components/body-composition/dashboard-screen";
 import { GoalScreen } from "@/components/body-composition/goal-screen";
+import { BODY_COMPOSITION_AD_SLOTS } from "@/lib/body-composition/monetization";
 import {
   createDraftFromRecord,
   removeCheckIn,
@@ -20,6 +23,7 @@ import {
 } from "@/lib/body-composition/validation";
 import type {
   BodyCompositionGoal,
+  BodyCompositionPlan,
   BodyCompositionRoute,
   CheckInDraft,
   CheckInRecord,
@@ -75,6 +79,7 @@ export function BodyCompositionApp() {
   const [modalView, setModalView] = useState<ModalView>(null);
   const [checkIns, setCheckIns] = useState<CheckInRecord[]>([]);
   const [goal, setGoal] = useState<BodyCompositionGoal | null>(null);
+  const [plan, setPlan] = useState<BodyCompositionPlan>("free");
   const [draft, setDraft] = useState<CheckInDraft>(createEmptyDraft());
   const [goalDraft, setGoalDraft] = useState<GoalDraft>(createEmptyGoalDraft());
   const [errors, setErrors] = useState<string[]>([]);
@@ -95,6 +100,7 @@ export function BodyCompositionApp() {
     const state = readBodyCompositionStateFromStorage(window.localStorage);
     setCheckIns(state.checkIns);
     setGoal(state.goal);
+    setPlan(state.plan);
     setHasHydrated(true);
   }, []);
 
@@ -106,8 +112,9 @@ export function BodyCompositionApp() {
     writeBodyCompositionStateToStorage(window.localStorage, {
       checkIns,
       goal,
+      plan,
     });
-  }, [checkIns, goal, hasHydrated]);
+  }, [checkIns, goal, plan, hasHydrated]);
 
   function resetOverlayState() {
     setModalView(null);
@@ -273,7 +280,7 @@ export function BodyCompositionApp() {
     : null;
 
   return (
-    <main className="coach-shell">
+    <main className="coach-app-shell" data-app-shell="true">
       <div className="coach-top-bezel">
         <button
           className="coach-bezel-button"
@@ -286,41 +293,63 @@ export function BodyCompositionApp() {
         </button>
       </div>
 
-      <header className="coach-header coach-header-compact" data-screen={route}>
-        <div className="coach-header-copy">
-          <span className="coach-section-label">현재 화면</span>
-          <strong>{getRouteLabel(route)}</strong>
-        </div>
+      <section className="coach-device-frame">
+        <header className="coach-app-header" data-screen={route}>
+          <div className="coach-header-copy">
+            <span className="coach-section-label">현재 화면</span>
+            <strong>{getRouteLabel(route)}</strong>
+          </div>
 
-        <div className="coach-header-actions">
-          <button
-            className="coach-secondary-button"
-            data-action="open-goal-settings"
-            onClick={openGoalSettings}
-            type="button"
-          >
-            목표 설정
-          </button>
-          <button className="coach-primary-button" onClick={openCheckIn} type="button">
-            체크인 추가
-          </button>
-        </div>
-      </header>
+          <div className="coach-header-actions">
+            <button
+              className="coach-secondary-button"
+              data-action="toggle-premium"
+              onClick={() =>
+                setPlan((current) => (current === "premium" ? "free" : "premium"))
+              }
+              type="button"
+            >
+              {plan === "premium" ? "무료 보기" : "Premium 보기"}
+            </button>
+            <button
+              className="coach-secondary-button"
+              data-action="open-goal-settings"
+              onClick={openGoalSettings}
+              type="button"
+            >
+              목표 설정
+            </button>
+            <button
+              className="coach-primary-button"
+              data-action="open-check-in"
+              onClick={openCheckIn}
+              type="button"
+            >
+              체크인 추가
+            </button>
+          </div>
+        </header>
 
-      <DashboardScreen
-        checkIns={checkIns}
-        currentView={route}
-        goal={goal}
-        onAddCheckIn={openCheckIn}
-        onChangeView={changeRoute}
-        onCloseCheckInDetail={() => setSelectedCheckInId(null)}
-        onEditCheckIn={openEditCheckIn}
-        onOpenCheckInDetail={openCheckInDetail}
-        onOpenGoalSettings={openGoalSettings}
-        onOpenHistory={openHistory}
-        onRequestDeleteCheckIn={requestDeleteCheckIn}
-        selectedCheckInId={selectedCheckInId}
-      />
+        <DashboardScreen
+          checkIns={checkIns}
+          currentView={route}
+          goal={goal}
+          plan={plan}
+          onAddCheckIn={openCheckIn}
+          onChangeView={changeRoute}
+          onCloseCheckInDetail={() => setSelectedCheckInId(null)}
+          onEditCheckIn={openEditCheckIn}
+          onOpenCheckInDetail={openCheckInDetail}
+          onOpenGoalSettings={openGoalSettings}
+          onOpenHistory={openHistory}
+          onRequestDeleteCheckIn={requestDeleteCheckIn}
+          onRequestPremiumPreview={() => setPlan("premium")}
+          selectedCheckInId={selectedCheckInId}
+        />
+
+        <BottomTabBar currentView={route} onChangeView={changeRoute} />
+        <AdRail plan={plan} slots={BODY_COMPOSITION_AD_SLOTS} />
+      </section>
 
       {modalView === "check-in" ? (
         <div className="coach-modal-backdrop" onClick={closeOverlay}>

@@ -63,14 +63,17 @@ test("DashboardScreen renders a home starter state with a primary action", () =>
     <DashboardScreen
       checkIns={[]}
       currentView="home"
+      goal={null}
+      plan="free"
       onAddCheckIn={() => {}}
       onChangeView={() => {}}
       onOpenHistory={() => {}}
+      onRequestPremiumPreview={() => {}}
     />,
   );
 
   assert.match(html, /data-screen-panel="home"/);
-  assert.match(html, /data-home-streak="true"/);
+  assert.match(html, /data-home-primary="true"/);
   assert.match(html, /data-action="open-check-in"/);
 });
 
@@ -81,6 +84,7 @@ test("BodyCompositionApp renders a single device shell with bottom tabs and a fr
   assert.match(html, /data-home-bezel="true"/);
   assert.match(html, /data-bottom-tabs="true"/);
   assert.match(html, /data-ad-rail="free"/);
+  assert.match(html, /data-tab-target="history"/);
   assert.doesNotMatch(html, /data-screen-nav="true"/);
 });
 
@@ -100,6 +104,7 @@ test("DashboardScreen renders focused home and coach panels without the old card
   );
 
   assert.match(homeHtml, /data-home-primary="true"/);
+  assert.match(homeHtml, /data-home-actions="minimal"/);
   assert.doesNotMatch(homeHtml, /data-home-card-grid/);
 
   const coachHtml = renderToStaticMarkup(
@@ -120,34 +125,7 @@ test("DashboardScreen renders focused home and coach panels without the old card
   assert.match(coachHtml, /data-premium-lock="coach-deep-dive"/);
 });
 
-test("DashboardScreen renders a home view with list navigation and streak summary", () => {
-  const html = renderToStaticMarkup(
-    <DashboardScreen
-      checkIns={checkIns}
-      currentView="home"
-      goal={{
-        targetWeightKg: 73,
-        targetBodyFatPercent: 15,
-      }}
-      onAddCheckIn={() => {}}
-      onChangeView={() => {}}
-      onOpenGoalSettings={() => {}}
-      onOpenHistory={() => {}}
-    />,
-  );
-
-  assert.match(html, /data-screen-panel="home"/);
-  assert.match(html, /data-screen-nav="true"/);
-  assert.match(html, /data-nav-target="progress"/);
-  assert.match(html, /data-nav-target="history"/);
-  assert.match(html, /data-nav-target="coach"/);
-  assert.match(html, /data-home-nav="true"/);
-  assert.match(html, /data-home-streak="true"/);
-  assert.match(html, /data-home-summary="true"/);
-  assert.match(html, /data-home-quick-actions="true"/);
-});
-
-test("DashboardScreen renders a progress view with trend details", () => {
+test("DashboardScreen renders a focused progress view with trend details and premium teaser", () => {
   const html = renderToStaticMarkup(
     <DashboardScreen
       checkIns={checkIns}
@@ -156,10 +134,12 @@ test("DashboardScreen renders a progress view with trend details", () => {
         targetWeightKg: 73,
         targetBodyFatPercent: 15,
       }}
+      plan="free"
       onAddCheckIn={() => {}}
       onChangeView={() => {}}
       onOpenGoalSettings={() => {}}
       onOpenHistory={() => {}}
+      onRequestPremiumPreview={() => {}}
     />,
   );
 
@@ -167,29 +147,29 @@ test("DashboardScreen renders a progress view with trend details", () => {
   assert.match(html, /data-goal-summary="true"/);
   assert.match(html, /data-metric-card="weight"/);
   assert.match(html, /data-trend-detail="true"/);
-  assert.match(html, /data-trend-series="weightKg"/);
+  assert.match(html, /data-premium-lock="period-compare"/);
 });
 
 test("DashboardScreen renders a record dialog when a history row is selected", () => {
   const html = renderToStaticMarkup(
     <DashboardScreen
-      {...({
-        checkIns,
-        currentView: "history",
-        onAddCheckIn: () => {},
-        onChangeView: () => {},
-        goal: {
-          targetWeightKg: 73,
-          targetBodyFatPercent: 15,
-        },
-        onOpenGoalSettings: () => {},
-        onOpenHistory: () => {},
-        onOpenCheckInDetail: () => {},
-        onEditCheckIn: () => {},
-        onRequestDeleteCheckIn: () => {},
-        onCloseCheckInDetail: () => {},
-        selectedCheckInId: "latest",
-      } as any)}
+      checkIns={checkIns}
+      currentView="history"
+      goal={{
+        targetWeightKg: 73,
+        targetBodyFatPercent: 15,
+      }}
+      plan="free"
+      onAddCheckIn={() => {}}
+      onChangeView={() => {}}
+      onOpenGoalSettings={() => {}}
+      onOpenHistory={() => {}}
+      onOpenCheckInDetail={() => {}}
+      onEditCheckIn={() => {}}
+      onRequestDeleteCheckIn={() => {}}
+      onCloseCheckInDetail={() => {}}
+      onRequestPremiumPreview={() => {}}
+      selectedCheckInId="latest"
     />,
   );
 
@@ -224,16 +204,13 @@ test("HistoryScreen renders the full history list and note text", () => {
   const html = renderToStaticMarkup(
     <HistoryScreen
       checkIns={checkIns}
-      currentView="history"
       onAddCheckIn={() => {}}
-      onBack={() => {}}
-      onChangeView={() => {}}
       onSelectCheckIn={() => {}}
     />,
   );
 
   assert.match(html, /data-screen-panel="history"/);
-  assert.match(html, /data-screen-nav="true"/);
+  assert.doesNotMatch(html, /data-screen-nav="true"/);
   assert.match(html, /data-history-list="true"/);
   assert.match(html, /data-history-row="latest"/);
   assert.match(html, /data-history-trigger="latest"/);
@@ -259,24 +236,24 @@ test("GoalScreen renders goal form fields and action buttons", () => {
   assert.match(html, /coach-form-actions/);
 });
 
-test("LandingScreen renders a compact home hierarchy", () => {
+test("LandingScreen renders a simplified home hierarchy", () => {
   const html = renderToStaticMarkup(
     <LandingScreen
       currentStatusLabel="Cutting in progress"
       currentStatusSummary="Status summary"
       goalSummary="1.8kg to goal"
       latestMeasuredAtText="Latest check-in 2026.04.27"
-      progressSummary="3 week streak active"
       streakLabel="3 week streak"
       weeklyStatusDetail="This week is staying on plan."
       weeklyStatusLabel="This week check-in complete"
       onAddCheckIn={() => {}}
-      onChangeView={() => {}}
+      onViewCoach={() => {}}
+      onViewProgress={() => {}}
     />,
   );
 
-  assert.match(html, /data-home-layout="compact"/);
-  assert.match(html, /data-home-actions="compact"/);
+  assert.match(html, /data-home-primary="true"/);
+  assert.match(html, /data-home-actions="minimal"/);
 });
 
 test("BodyCompositionApp renders the simplified shell home state on first load", () => {
@@ -286,7 +263,7 @@ test("BodyCompositionApp renders the simplified shell home state on first load",
   assert.match(html, /data-home-bezel="true"/);
   assert.match(html, /data-bottom-tabs="true"/);
   assert.match(html, /data-ad-rail="free"/);
-  assert.doesNotMatch(html, /data-screen-nav="true"/);
-  assert.match(html, /二쇨컙泥댄겕/);
+  assert.match(html, /data-home-primary="true"/);
   assert.match(html, /data-action="open-check-in"/);
+  assert.doesNotMatch(html, /data-screen-nav="true"/);
 });

@@ -1,7 +1,7 @@
 import React from "react";
 import { HistoryScreen } from "@/components/body-composition/history-screen";
 import { LandingScreen } from "@/components/body-composition/landing-screen";
-import { ScreenNavigation } from "@/components/body-composition/screen-navigation";
+import { PremiumLockCard } from "@/components/body-composition/premium-lock-card";
 import { TrendChart } from "@/components/body-composition/trend-chart";
 import {
   buildCoachSummary,
@@ -15,6 +15,7 @@ import {
 } from "@/lib/body-composition/coach-engine";
 import type {
   BodyCompositionGoal,
+  BodyCompositionPlan,
   BodyCompositionRoute,
   CheckInRecord,
 } from "@/types/body-composition";
@@ -23,6 +24,7 @@ type DashboardScreenProps = {
   checkIns: CheckInRecord[];
   currentView: BodyCompositionRoute;
   goal?: BodyCompositionGoal | null;
+  plan: BodyCompositionPlan;
   onAddCheckIn: () => void;
   onChangeView: (view: BodyCompositionRoute) => void;
   onCloseCheckInDetail?: () => void;
@@ -31,6 +33,7 @@ type DashboardScreenProps = {
   onOpenGoalSettings?: () => void;
   onOpenHistory: () => void;
   onRequestDeleteCheckIn?: (id: string) => void;
+  onRequestPremiumPreview: () => void;
   selectedCheckInId?: string | null;
 };
 
@@ -53,7 +56,7 @@ function getWeeklyCheckInStatus(checkIns: CheckInRecord[]) {
 
   if (daysSinceLatest <= 7) {
     return {
-      detail: `${latest.measuredAt} 기록까지 반영되었습니다. 지금 흐름을 유지하면 됩니다.`,
+      detail: `${latest.measuredAt} 기록까지 반영됐습니다. 지금 흐름을 유지하면 됩니다.`,
       label: "이번 주 체크인 완료",
     };
   }
@@ -89,12 +92,13 @@ function renderSelectedCheckInDialog({
   }
 
   return (
-    <div className="coach-modal-backdrop">
+    <div className="coach-modal-backdrop" onClick={onCloseCheckInDetail}>
       <article
         aria-label="selected check-in details"
         aria-modal="true"
         className="coach-modal-window coach-modal-window-compact"
         data-record-dialog={selectedRow.id}
+        onClick={(event) => event.stopPropagation()}
         role="dialog"
       >
         <section className="coach-panel coach-detail-modal">
@@ -140,7 +144,7 @@ function renderSelectedCheckInDialog({
 
           <div className="coach-detail-note">
             <span className="coach-section-label">메모</span>
-            <p>{selectedRow.note || "저장한 메모가 없습니다."}</p>
+            <p>{selectedRow.note || "저장된 메모가 없습니다."}</p>
           </div>
 
           <div className="coach-detail-actions">
@@ -176,33 +180,25 @@ function renderEmptyScreen(
     return (
       <LandingScreen
         currentStatusLabel="기록 시작"
-        currentStatusSummary="첫 체크인을 남기면 이번 주 상태와 연속 기록이 여기서 바로 보입니다."
+        currentStatusSummary="첫 체크인을 넣으면 몸 변화 흐름과 주간 상태가 여기에 바로 보입니다."
         goalSummary={null}
         latestMeasuredAtText="최근 체크인이 아직 없습니다."
-        progressSummary="체크인을 시작하면 이번 주 진행 요약이 자동으로 정리됩니다."
         streakLabel="아직 시작 전"
-        weeklyStatusDetail="측정 날짜와 체성분을 넣으면 홈이 주간 요약 화면으로 바뀝니다."
+        weeklyStatusDetail="체성분 수치를 입력하면 다음 주 운동 방향까지 이어서 정리됩니다."
         weeklyStatusLabel="이번 주 체크인 필요"
         onAddCheckIn={onAddCheckIn}
-        onChangeView={onChangeView}
+        onViewCoach={() => onChangeView("coach")}
+        onViewProgress={() => onChangeView("progress")}
       />
     );
   }
 
   return (
-    <section className="coach-screen-layout" data-screen-panel={currentView}>
-      <ScreenNavigation currentView={currentView} onChangeView={onChangeView} />
-
-      <section
-        className="coach-panel coach-empty-state coach-screen-content"
-        data-dashboard="true"
-        data-empty-state="true"
-      >
-        <span className="coach-section-label">주간 코치 시작</span>
-        <h1>첫 주간 체크인을 추가하고 기준선을 만들어보세요.</h1>
-        <p>
-          첫 기록부터 저장되면 진행, 기록, 코치 화면이 각각의 역할에 맞게 채워집니다.
-        </p>
+    <section className="coach-screen-body" data-screen-panel={currentView}>
+      <section className="coach-panel coach-empty-state" data-empty-state="true">
+        <span className="coach-section-label">주간체크 시작</span>
+        <h1>첫 체크인을 추가하면 이 화면이 목적에 맞게 채워집니다.</h1>
+        <p>홈에서는 연속 체크인, 진행에서는 그래프, 기록에서는 목록, 코치에서는 해석이 보이게 됩니다.</p>
         <button
           className="coach-primary-button"
           data-action="open-check-in"
@@ -220,6 +216,7 @@ export function DashboardScreen({
   checkIns,
   currentView,
   goal,
+  plan,
   onAddCheckIn,
   onChangeView,
   onCloseCheckInDetail,
@@ -228,6 +225,7 @@ export function DashboardScreen({
   onOpenGoalSettings,
   onOpenHistory,
   onRequestDeleteCheckIn,
+  onRequestPremiumPreview,
   selectedCheckInId,
 }: DashboardScreenProps) {
   if (checkIns.length === 0) {
@@ -242,7 +240,7 @@ export function DashboardScreen({
   const points = buildTrendPoints(checkIns);
   const weeklyProgress = buildWeeklyProgressSummary(checkIns, goal ?? null);
   const weeklyStatus = getWeeklyCheckInStatus(checkIns);
-  const latestMeasuredAtText = consistency.supportingCopy.replace("최근 체크인 ", "최근 측정 ");
+  const latestMeasuredAtText = consistency.supportingCopy.replace("최근 체크인", "최근 측정");
 
   if (currentView === "home") {
     return (
@@ -251,12 +249,12 @@ export function DashboardScreen({
         currentStatusSummary={currentStatus.summary}
         goalSummary={goalProgress?.summary ?? null}
         latestMeasuredAtText={latestMeasuredAtText}
-        progressSummary={weeklyProgress}
         streakLabel={consistency.streakLabel}
         weeklyStatusDetail={weeklyStatus.detail}
         weeklyStatusLabel={weeklyStatus.label}
         onAddCheckIn={onAddCheckIn}
-        onChangeView={onChangeView}
+        onViewCoach={() => onChangeView("coach")}
+        onViewProgress={() => onChangeView("progress")}
       />
     );
   }
@@ -266,10 +264,7 @@ export function DashboardScreen({
       <>
         <HistoryScreen
           checkIns={checkIns}
-          currentView={currentView}
           onAddCheckIn={onAddCheckIn}
-          onBack={() => onChangeView("home")}
-          onChangeView={onChangeView}
           onSelectCheckIn={onOpenCheckInDetail}
         />
         {renderSelectedCheckInDialog({
@@ -285,153 +280,110 @@ export function DashboardScreen({
 
   if (currentView === "coach") {
     return (
-      <section className="coach-screen-layout" data-screen-panel="coach">
-        <ScreenNavigation currentView={currentView} onChangeView={onChangeView} />
+      <section className="coach-screen-body" data-screen-panel="coach">
+        <section className="coach-panel coach-coach-primary" data-coach-primary="true">
+          <span className="coach-current-status-badge">{currentStatus.label}</span>
+          <h1>{summary.headline}</h1>
+          <p className="coach-summary-copy">{summary.subline}</p>
+          <ul className="coach-action-list">
+            {summary.actionItems.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ul>
+        </section>
 
-        <div className="coach-screen-content coach-screen-stack" data-dashboard="true">
-          <div className="coach-panel coach-summary-card" data-coach-summary="true">
-            <div className="coach-summary-head">
-              <span className="coach-section-label">이번 주 코치</span>
-              <button
-                className="coach-secondary-button"
-                data-action="open-check-in"
-                onClick={onAddCheckIn}
-                type="button"
-              >
-                체크인 추가
-              </button>
-            </div>
+        <section className="coach-home-meta-row coach-coach-supporting">
+          <article className="coach-panel coach-home-mini-panel" data-weekly-progress="true">
+            <span className="coach-section-label">이번 주 진행</span>
+            <strong>{weeklyProgress}</strong>
+            <p>{currentStatus.detail}</p>
+          </article>
 
-            <div
-              className={`coach-current-status coach-current-status-${currentStatus.tone}`}
-              data-current-status="true"
-            >
-              <div className="coach-current-status-copy">
-                <span className="coach-current-status-badge">{currentStatus.label}</span>
-                <strong>{currentStatus.summary}</strong>
-              </div>
-              <p>{currentStatus.detail}</p>
-            </div>
-
-            <h1>{summary.headline}</h1>
-            <p className="coach-summary-copy">{summary.subline}</p>
-
-            <ul className="coach-action-list">
-              {summary.actionItems.map((item) => (
-                <li key={item}>{item}</li>
-              ))}
-            </ul>
-          </div>
-
-          <div className="coach-insight-grid">
-            <article
-              className="coach-panel coach-insight-card"
-              data-consistency-summary="true"
-            >
-              <span className="coach-section-label">연속 체크인</span>
-              <strong>{consistency.streakLabel}</strong>
-              <p>{consistency.supportingCopy}</p>
+          {plan === "premium" ? (
+            <article className="coach-panel coach-home-mini-panel" data-premium-active="coach">
+              <span className="coach-section-label">Premium 활성화</span>
+              <strong>더 긴 기간 비교와 깊은 해석이 열려 있습니다.</strong>
+              <p>무료 상태보다 더 긴 흐름과 해석을 다음 단계에서 확장할 수 있습니다.</p>
             </article>
-
-            <article
-              className="coach-panel coach-insight-card"
-              data-weekly-progress="true"
-            >
-              <span className="coach-section-label">이번 주 진행</span>
-              <strong>{weeklyProgress}</strong>
-              <p>지금 흐름을 다시 보고 이번 주에 무엇을 유지할지 빠르게 판단할 수 있습니다.</p>
-            </article>
-          </div>
-
-          <div className="coach-panel coach-goal-card" data-goal-summary="true">
-            <div className="coach-summary-head">
-              <span className="coach-section-label">목표 진행</span>
-              <button
-                className="coach-secondary-button"
-                onClick={onOpenGoalSettings}
-                type="button"
-              >
-                목표 설정
-              </button>
-            </div>
-
-            <p className="coach-summary-copy">
-              {goalProgress?.summary ??
-                "목표를 저장하면 현재 수치와 남은 차이를 이 화면에서 같이 확인할 수 있습니다."}
-            </p>
-          </div>
-        </div>
+          ) : (
+            <PremiumLockCard
+              slotId="coach-deep-dive"
+              title="더 깊은 코치 해석"
+              copy="Premium에서는 기간별 비교와 더 긴 해석 문장을 함께 보여줍니다."
+              onPreviewPremium={onRequestPremiumPreview}
+            />
+          )}
+        </section>
       </section>
     );
   }
 
   return (
-    <section className="coach-screen-layout" data-screen-panel="progress">
-      <ScreenNavigation currentView={currentView} onChangeView={onChangeView} />
+    <section className="coach-screen-body" data-screen-panel="progress">
+      <section className="coach-progress-overview">
+        {metrics.map((metric, index) => {
+          const metricIds = ["weight", "skeletal-muscle", "body-fat"];
 
-      <div className="coach-screen-content coach-screen-stack" data-dashboard="true">
-        <div className="coach-panel coach-goal-card" data-goal-summary="true">
-          <div className="coach-summary-head">
-            <span className="coach-section-label">목표 진행</span>
+          return (
+            <article
+              className="coach-panel coach-progress-metric"
+              data-metric-card={metricIds[index]}
+              key={metric.label}
+            >
+              <span className="coach-section-label">{metric.label}</span>
+              <strong>{metric.valueText}</strong>
+              <p>{metric.deltaText}</p>
+            </article>
+          );
+        })}
+      </section>
+
+      <section className="coach-panel coach-progress-primary">
+        <div className="coach-section-head">
+          <div>
+            <span className="coach-section-label">변화 추이</span>
+            <h1>최근 4주 흐름</h1>
+          </div>
+          <button className="coach-text-button" onClick={onOpenHistory} type="button">
+            기록 보기
+          </button>
+        </div>
+        <TrendChart points={points} />
+      </section>
+
+      <section className="coach-home-meta-row">
+        <article className="coach-panel coach-home-mini-panel" data-goal-summary="true">
+          <span className="coach-section-label">목표 진행</span>
+          <strong>
+            {goalProgress?.summary ?? "목표를 설정하면 현재 수치와 남은 차이를 바로 보여줍니다."}
+          </strong>
+          <p>
+            {goalProgress
+              ? `${goalProgress.targetWeightText} / ${goalProgress.targetBodyFatText}`
+              : "목표 설정을 열어서 체중과 체지방률 목표를 저장하세요."}
+          </p>
+          {onOpenGoalSettings ? (
             <button className="coach-secondary-button" onClick={onOpenGoalSettings} type="button">
               목표 설정
             </button>
-          </div>
-
-          {goalProgress ? (
-            <>
-              <div className="coach-goal-grid">
-                <div className="coach-goal-stat">
-                  <span>목표 체중</span>
-                  <strong>{goalProgress.targetWeightText}</strong>
-                  <p>{goalProgress.remainingWeightText}</p>
-                </div>
-                <div className="coach-goal-stat">
-                  <span>목표 체지방률</span>
-                  <strong>{goalProgress.targetBodyFatText}</strong>
-                  <p>{goalProgress.remainingBodyFatText}</p>
-                </div>
-              </div>
-              <p className="coach-summary-copy">{goalProgress.summary}</p>
-            </>
-          ) : (
-            <p className="coach-summary-copy">
-              목표를 저장하면 현재 수치와 남은 차이를 바로 보여줍니다.
-            </p>
-          )}
-        </div>
-
-        <div className="coach-metrics-grid">
-          {metrics.map((metric, index) => {
-            const metricIds = ["weight", "skeletal-muscle", "body-fat"];
-
-            return (
-              <article
-                className="coach-panel coach-metric-card"
-                data-metric-card={metricIds[index]}
-                key={metric.label}
-              >
-                <span className="coach-metric-label">{metric.label}</span>
-                <strong>{metric.valueText}</strong>
-                <p>{metric.deltaText}</p>
-              </article>
-            );
-          })}
-        </div>
-
-        <article className="coach-panel coach-screen-content-block">
-          <div className="coach-section-head">
-            <div>
-              <h2>4주 추이</h2>
-              <p className="coach-muted">체중 / 골격근량 / 체지방률</p>
-            </div>
-            <button className="coach-text-button" onClick={onOpenHistory} type="button">
-              기록 화면 열기
-            </button>
-          </div>
-          <TrendChart points={points} />
+          ) : null}
         </article>
-      </div>
+
+        {plan === "premium" ? (
+          <article className="coach-panel coach-home-mini-panel" data-premium-active="progress">
+            <span className="coach-section-label">Premium 활성화</span>
+            <strong>긴 기간 비교와 리포트 기능을 이어서 확장할 수 있습니다.</strong>
+            <p>무료 상태에서는 최근 흐름만, Premium에서는 더 긴 비교를 여는 구조입니다.</p>
+          </article>
+        ) : (
+          <PremiumLockCard
+            slotId="period-compare"
+            title="긴 기간 비교와 리포트"
+            copy="Premium에서는 8주 이상 비교와 PDF 리포트 슬롯을 여는 방향으로 확장됩니다."
+            onPreviewPremium={onRequestPremiumPreview}
+          />
+        )}
+      </section>
     </section>
   );
 }
