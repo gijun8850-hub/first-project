@@ -29,6 +29,30 @@ export type GoalDraft = {
 
 export type BodyCompositionRoute = "home" | "progress" | "history" | "coach";
 
+export type BodyCompositionPlan = "free" | "premium";
+
+export type BodyCompositionAdSlot = {
+  id: string;
+  sponsor: string;
+  embedHtml: string;
+  fallbackTitle: string;
+  fallbackCopy: string;
+  href: string;
+};
+
+export type AdRailViewModel =
+  | {
+      mode: "premium";
+      title: string;
+      copy: string;
+    }
+  | {
+      mode: "free";
+      title: string;
+      copy: string;
+      slot: BodyCompositionAdSlot;
+    };
+
 export type CoachStatus =
   | "baseline"
   | "on-track"

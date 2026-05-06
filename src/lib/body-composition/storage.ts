@@ -1,4 +1,5 @@
 import type {
+  BodyCompositionPlan,
   BodyCompositionGoal,
   CheckInRecord,
 } from "@/types/body-composition";
@@ -8,6 +9,7 @@ export const BODY_COMPOSITION_STORAGE_KEY = "weekly-body-composition-checkins";
 export type BodyCompositionStorageState = {
   checkIns: CheckInRecord[];
   goal: BodyCompositionGoal | null;
+  plan: BodyCompositionPlan;
 };
 
 type StorageLike = Pick<Storage, "getItem" | "setItem">;
@@ -69,13 +71,19 @@ function sortNewestFirst(checkIns: CheckInRecord[]) {
   );
 }
 
+function normalizePlan(value: unknown): BodyCompositionPlan {
+  return value === "premium" ? "premium" : "free";
+}
+
 function buildState(
   checkIns: CheckInRecord[],
   goal: BodyCompositionGoal | null,
+  plan: BodyCompositionPlan,
 ): BodyCompositionStorageState {
   return {
     checkIns: sortNewestFirst(checkIns),
     goal,
+    plan,
   };
 }
 
@@ -93,31 +101,33 @@ export function parseStoredBodyCompositionState(
   raw: string | null,
 ): BodyCompositionStorageState {
   if (!raw) {
-    return buildState([], null);
+    return buildState([], null, "free");
   }
 
   try {
     const parsed = JSON.parse(raw) as unknown;
 
     if (Array.isArray(parsed)) {
-      return buildState(parseCheckIns(parsed), null);
+      return buildState(parseCheckIns(parsed), null, "free");
     }
 
     if (!parsed || typeof parsed !== "object") {
-      return buildState([], null);
+      return buildState([], null, "free");
     }
 
     const state = parsed as {
       checkIns?: unknown;
       goal?: unknown;
+      plan?: unknown;
     };
 
     return buildState(
       parseCheckIns(state.checkIns),
       isBodyCompositionGoal(state.goal) ? state.goal : null,
+      normalizePlan(state.plan),
     );
   } catch {
-    return buildState([], null);
+    return buildState([], null, "free");
   }
 }
 
@@ -141,7 +151,7 @@ export function writeBodyCompositionStateToStorage(
 ) {
   storage.setItem(
     BODY_COMPOSITION_STORAGE_KEY,
-    JSON.stringify(buildState(state.checkIns, state.goal)),
+    JSON.stringify(buildState(state.checkIns, state.goal, state.plan)),
   );
 }
 
@@ -153,5 +163,6 @@ export function writeCheckInsToStorage(
   writeBodyCompositionStateToStorage(storage, {
     checkIns,
     goal: currentState.goal,
+    plan: currentState.plan,
   });
 }
